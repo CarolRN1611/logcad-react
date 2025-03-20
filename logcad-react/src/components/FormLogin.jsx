@@ -30,78 +30,82 @@ function FormLogin() {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-
-    // Validação simples
+    
     if (!email || !password) {
       if (!email) setEmailError(true);
       if (!password) setPasswordError(true);
       return;
     }
 
-    // Simulação de login (aqui você pode fazer a chamada para uma API)
     alert('Login efetuado com sucesso!');
   };
 
   return (
+    
+
     <Box
       component="form"
       sx={{
         '& .MuiTextField-root': { m: 1, width: '100%' },
         display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: 2
+        flexDirection: 'column', 
+        alignItems: 'center', 
+        justifyContent: 'center', 
+        padding: 5,
+        width: '100%', 
+        maxWidth: 400, 
+        maxHeight: 450,
+        margin: '0 auto', 
+        height: '100vh',
+        backgroundColor: 'grey',
+        borderRadius: 10,
       }}
       noValidate
       autoComplete="off"
       onSubmit={handleSubmit}
     >
-      <div>
-        <TextField
-          required
-          id="email"
-          label="Email"
-          variant="outlined"
-          value={email}
+      <TextField sx={{ m: 1, width: '100%' ,borderColor: 'black', color: 'white' }}
+        required
+        id="email"
+        label="Email"
+        variant="outlined"
+        value={email}
+        onChange={(e) => {
+          setEmail(e.target.value);
+          setEmailError(false);
+        }}
+        error={emailError}
+        helperText={emailError ? 'Email é obrigatório' : ''}
+      />
+      <FormControl sx={{ m: 1, width: '100%', }} variant="outlined" required>
+        <InputLabel htmlFor="outlined-adornment-password">Password</InputLabel>
+        <OutlinedInput
+          id="outlined-adornment-password"
+          type={showPassword ? 'text' : 'password'}
+          value={password}
           onChange={(e) => {
-            setEmail(e.target.value);
-            setEmailError(false);
+            setPassword(e.target.value);
+            setPasswordError(false);
           }}
-          error={emailError}
-          helperText={emailError ? 'Email é obrigatório' : ''}
+          error={passwordError}
+          helperText={passwordError ? 'Senha é obrigatória' : ''}
+          endAdornment={
+            <InputAdornment position="end">
+              <IconButton
+                aria-label={showPassword ? 'hide the password' : 'display the password'}
+                onClick={handleClickShowPassword}
+                onMouseDown={handleMouseDownPassword}
+                onMouseUp={handleMouseUpPassword}
+                edge="end"
+              >
+                {showPassword ? <VisibilityOff /> : <Visibility />}
+              </IconButton>
+            </InputAdornment>
+          }
+          label="Password"
         />
-        <FormControl sx={{ m: 1, width: '25ch' }} variant="outlined" required>
-          <InputLabel htmlFor="outlined-adornment-password">Password</InputLabel>
-          <OutlinedInput
-            id="outlined-adornment-password"
-            type={showPassword ? 'text' : 'password'}
-            value={password}
-            onChange={(e) => {
-              setPassword(e.target.value);
-              setPasswordError(false);
-            }}
-            error={passwordError}
-            endAdornment={
-              <InputAdornment position="end">
-                <IconButton
-                  aria-label={
-                    showPassword ? 'hide the password' : 'display the password'
-                  }
-                  onClick={handleClickShowPassword}
-                  onMouseDown={handleMouseDownPassword}
-                  onMouseUp={handleMouseUpPassword}
-                  edge="end"
-                >
-                  {showPassword ? <VisibilityOff /> : <Visibility />}
-                </IconButton>
-              </InputAdornment>
-            }
-            label="Password"
-          />
-        </FormControl>
-      </div>
-      <Button type="submit" variant="contained" sx={{ mt: 2 }}>
+      </FormControl>
+      <Button type="submit" variant="contained" sx={{ mt: 2,p:2, width: '100%',backgroundColor: 'black', color: 'white' }}>
         Login
       </Button>
     </Box>
