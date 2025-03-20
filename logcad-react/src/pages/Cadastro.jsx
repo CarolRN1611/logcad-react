@@ -1,5 +1,5 @@
 import { Box } from "@mui/material";
-import background from '../assets/background.jpg';
+import background from '../assets/background2.jpg';
 import FormCadastro from "../components/FormCadastro";
 
 function Cadastro() {

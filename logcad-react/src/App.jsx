@@ -1,6 +1,6 @@
 import { Button, Box, Typography } from "@mui/material"; // Usando Box em vez de Container
 import FormLogin from "./components/FormLogin";
-import background from '../src/assets/background.jpg';
+import background from '../src/assets/background2.jpg';
 
 function App() {
   return (
