@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client'
 import './styles/index.css'
 import App from './App.jsx'
 import Cadastro from './pages/Cadastro.jsx'
+import RecuperarSenha from './pages/RecuperarSenha.jsx'
 import { createBrowserRouter,RouterProvider } from 'react-router-dom';
 
 const router = createBrowserRouter([
@@ -13,6 +14,10 @@ const router = createBrowserRouter([
   {
     path: "/cadastro",
     element : <Cadastro/>,
+  },
+  {
+    path: "/recuperar-senha",
+    element : <RecuperarSenha/>,
   },
 ]);
 

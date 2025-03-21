@@ -59,6 +59,9 @@ function FormLogin() {
   function Cadastro() {
     navegateCad(`/cadastro`);
   }
+  function Recuperarsenha() {
+    navegateCad(`/recuperar-senha`);
+  }
 
   return (
     <Box
@@ -174,6 +177,7 @@ function FormLogin() {
           color: '#1976d2',
           '&:hover': { textDecoration: 'underline' },
         }}
+        onClick={() => Recuperarsenha()}
       >
         Esqueceu a Senha?
       </Button>
@@ -187,6 +191,7 @@ function FormLogin() {
           '&:hover': { textDecoration: 'underline' },
         }}
         onClick={() => Cadastro()}
+        
       >
         Novo Aqui? Criar Conta
       </Button>
