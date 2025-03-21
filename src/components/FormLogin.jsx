@@ -119,41 +119,42 @@ function FormLogin() {
         }}
       />
 
-      <FormControl sx={{ m: 1, width: '100%' }} variant="outlined" required error={passwordError}>
-        <InputLabel htmlFor="outlined-adornment-password">Senha</InputLabel>
-        <OutlinedInput
-          id="outlined-adornment-password"
-          type={showPassword ? 'text' : 'password'}
-          value={password}
-          onChange={(e) => {
-            setPassword(e.target.value);
-            setPasswordError(false);
-          }}
-          placeholder="Digite sua senha"
-          endAdornment={
-            <InputAdornment position="end">
-              <IconButton
-                aria-label={showPassword ? 'hide the password' : 'display the password'}
-                onClick={handleClickShowPassword}
-                onMouseDown={handleMouseDownPassword}
-                onMouseUp={handleMouseUpPassword}
-                edge="end"
-              >
-                {showPassword ? <VisibilityOff /> : <Visibility />}
-              </IconButton>
-            </InputAdornment>
+    <FormControl sx={{ m: 1, width: '100%' }} variant="outlined" required error={passwordError}>
+      <InputLabel htmlFor="outlined-adornment-password">Senha</InputLabel>
+      <OutlinedInput
+        id="outlined-adornment-password"
+        type={showPassword ? 'text' : 'password'}
+        value={password}
+        onChange={(e) => {
+          setPassword(e.target.value);
+          setPasswordError(false);
+        }}
+        placeholder="Digite sua senha"
+        endAdornment={
+          <InputAdornment position="end">
+            <IconButton
+              aria-label={showPassword ? 'hide the password' : 'display the password'}
+              onClick={handleClickShowPassword}
+              onMouseDown={handleMouseDownPassword}
+              onMouseUp={handleMouseUpPassword}
+              edge="end"
+            >
+              {showPassword ? <VisibilityOff /> : <Visibility />}
+            </IconButton>
+          </InputAdornment>
+        }
+        label="Senha"
+        InputProps={{
+          sx: {
+            "& input::placeholder": { color: "gray", opacity: 1 } // Ajuste correto para o placeholder
           }
-          label="Password"
-          InputProps={{
-            sx: {
-              "& input::placeholder": { color: "gray", opacity: 1 } // Ajuste correto para o placeholder
-            }
-          }}
-        />
-        {passwordError && (
-          <FormHelperText error> A senha deve ter pelo menos 8 caracteres. </FormHelperText>
-        )}
-      </FormControl>
+        }}
+      />
+      {passwordError && (
+        <FormHelperText error> A senha deve ter pelo menos 8 caracteres. </FormHelperText>
+      )}
+    </FormControl>
+
 
           <Box
       sx={{
