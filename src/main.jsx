@@ -1,6 +1,6 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
-import './css/index.css'
+import './styles/index.css'
 import App from './App.jsx'
 import Cadastro from './pages/Cadastro.jsx'
 import { createBrowserRouter,RouterProvider } from 'react-router-dom';
