@@ -17,6 +17,7 @@ import InstagramIcon from '@mui/icons-material/Instagram';
 import { useState } from 'react';
 import { useNavigate } from "react-router-dom";
 
+
 function FormCadastro(){
   const [showPassword, setShowPassword] = React.useState(false);
   const [email, setEmail] = useState('');
@@ -32,6 +33,7 @@ function FormCadastro(){
   const [passwordError, setPasswordError] = useState(false);
   const [passwordConfirmError, setPasswordConfirmError] = useState(false);
   const navegateCad = useNavigate();
+  const navigate = useNavigate();
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);
 
@@ -255,8 +257,21 @@ function FormCadastro(){
         Cadastro
       </Button>
 
-
+      <Button
+        variant="text"
+        sx={{
+          mt: 2,
+          fontSize: '0.9rem',
+          fontWeight: 'bold',
+          color: '#1976d2',
+          '&:hover': { textDecoration: 'underline' },
+        }}
+        onClick={() => navigate('/')}
+      >
+        Voltar para Login
+      </Button>
     </Box>
+    
   );
 }
 
