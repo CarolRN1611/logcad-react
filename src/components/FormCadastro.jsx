@@ -11,11 +11,9 @@ import FormHelperText from '@mui/material/FormHelperText'; // Para usar com help
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import Button from '@mui/material/Button';
-import GoogleIcon from '@mui/icons-material/Google';
-import AppleIcon from '@mui/icons-material/Apple';
-import InstagramIcon from '@mui/icons-material/Instagram';
 import { useState } from 'react';
 import { useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
 
 
 function FormCadastro(){
@@ -32,7 +30,6 @@ function FormCadastro(){
   const [emailConfirmError, setEmailConfirmError] = useState(false);
   const [passwordError, setPasswordError] = useState(false);
   const [passwordConfirmError, setPasswordConfirmError] = useState(false);
-  const navegateCad = useNavigate();
   const navigate = useNavigate();
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);
@@ -68,11 +65,29 @@ function FormCadastro(){
       setPasswordConfirmError(true);
       return;
     }
-    alert('Cadastro realizado com sucesso!');
+    Swal.fire({
+      title: "Você tem certeza?",
+      text: "Você deseja cadastrar ?",
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Sim, cadastrar!"
+    }).then((result) => {
+      if (result.isConfirmed) {
+        Swal.fire({
+          title: "Cadastrado com sucesso!",
+          text: "O usuário foi cadastrado.",
+          icon: "success"
+        }).then(() => {
+          Login(); 
+        });
+      }
+    });    
   };
 
-  function Cadastro() {
-    navegateCad(`/cadastro`);
+  function Login() {
+    navigate(`/`);
   }
 
   return (
@@ -101,7 +116,7 @@ function FormCadastro(){
           fontWeight: 'bold', color: '#333', mb: 2
         }}
       >
-        Se cadastre
+        Cadastre-se
       </Typography>
 
       <Typography 
@@ -254,7 +269,7 @@ function FormCadastro(){
         fontWeight: 'bold',
         '&:hover': { backgroundColor: '#1565c0' },
       }}>
-        Cadastro
+        Cadastrar
       </Button>
 
       <Button

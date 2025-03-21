@@ -42,9 +42,8 @@ function FormLogin() {
   const handleSubmit = (event) => {
     event.preventDefault();
 
-    let hasError = false; // Variável para indicar se há erro na validação
+    let hasError = false; 
 
-    // Verifica se o email está vazio
     if (!email) {
         setEmailError(true);
         setHelperText("O campo de email é obrigatório");
