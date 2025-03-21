@@ -11,7 +11,9 @@ import FormHelperText from '@mui/material/FormHelperText'; // Para usar com help
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import Button from '@mui/material/Button';
-import Swal from 'sweetalert2'
+import GoogleIcon from '@mui/icons-material/Google';
+import AppleIcon from '@mui/icons-material/Apple';
+import InstagramIcon from '@mui/icons-material/Instagram';
 import { useState } from 'react';
 import { useNavigate } from "react-router-dom";
 
@@ -29,7 +31,7 @@ function FormCadastro(){
   const [emailConfirmError, setEmailConfirmError] = useState(false);
   const [passwordError, setPasswordError] = useState(false);
   const [passwordConfirmError, setPasswordConfirmError] = useState(false);
-  const navigateLog = useNavigate();
+  const navegateCad = useNavigate();
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);
 
@@ -64,62 +66,46 @@ function FormCadastro(){
       setPasswordConfirmError(true);
       return;
     }
-    Swal.fire({
-      title: 'Você tem certeza?',
-      text: "Deseja realmente realizar o cadastro?",
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonText: 'Sim, cadastrar!',
-      cancelButtonText: 'Cancelar',
-    }).then((result) => {
-      if (result.isConfirmed) {
-        Swal.fire('Cadastro realizado!', '', 'success').then(() => {Login();});
-      } else {
-        Swal.fire('Cadastro cancelado', '', 'error');
-      }
-    });
+    alert('Cadastro realizado com sucesso!');
   };
 
-  function Login() {
-    navigateLog(`/`);
+  function Cadastro() {
+    navegateCad(`/cadastro`);
   }
 
   return (
     <Box
-    component="form"
-    sx={{
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      justifyContent: 'center',
-      padding: 5, 
-      width: '100%',
-      maxHeight: 700,
-      maxWidth: 500, 
-      backgroundColor: '#fff',
-      borderRadius: 4,
-      boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)',
-      margin: '5vh auto', 
-
-    }}
-    noValidate
-    autoComplete="off"
-    onSubmit={handleSubmit}
-  >
-  
+      component="form"
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: 4,
+        width: '90%',
+        maxWidth: 400,
+        backgroundColor: '#fff',
+        borderRadius: 4,
+        boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)',
+        margin: '10vh auto',
+      }}
+      noValidate
+      autoComplete="off"
+      onSubmit={handleSubmit}
+    >
       <Typography 
         variant="h4" 
         sx={{
-          fontWeight: 'bold', color: '#333',mb:0
+          fontWeight: 'bold', color: '#333', mb: 2
         }}
       >
-        Cadastre-se
+        Se cadastre
       </Typography>
 
       <Typography 
         variant="body1" 
         sx={{
-          color: '#555', mb: 1
+          color: '#555', mb: 3 
         }}
       >
         Insira suas informações abaixo.
@@ -247,7 +233,6 @@ function FormCadastro(){
         placeholder="Digite seu telefone"
       />
 
-
       <TextField
         sx={{ m: 1, width: '100%' }}
         required
@@ -269,6 +254,7 @@ function FormCadastro(){
       }}>
         Cadastro
       </Button>
+
 
     </Box>
   );

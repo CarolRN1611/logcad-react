@@ -14,7 +14,9 @@ import Button from '@mui/material/Button';
 import GoogleIcon from '@mui/icons-material/Google';
 import AppleIcon from '@mui/icons-material/Apple';
 import InstagramIcon from '@mui/icons-material/Instagram';
-import Swal from 'sweetalert2'
+import Swal from "sweetalert2";
+
+
 import { useState } from 'react';
 import { useNavigate } from "react-router-dom";
 
@@ -78,7 +80,7 @@ function FormLogin() {
     navigateCad(`/cadastro`);
   }
   function Recuperarsenha() {
-    navegateCad(`/recuperar-senha`);
+    navigateCad(`/recuperar-senha`);
   }
 
   return (
