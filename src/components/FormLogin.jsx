@@ -14,6 +14,7 @@ import Button from '@mui/material/Button';
 import GoogleIcon from '@mui/icons-material/Google';
 import AppleIcon from '@mui/icons-material/Apple';
 import InstagramIcon from '@mui/icons-material/Instagram';
+import Swal from 'sweetalert2'
 import { useState } from 'react';
 import { useNavigate } from "react-router-dom";
 
@@ -23,7 +24,8 @@ function FormLogin() {
   const [password, setPassword] = useState('');
   const [emailError, setEmailError] = useState(false);
   const [passwordError, setPasswordError] = useState(false);
-  const navegateCad = useNavigate();
+  const [helperText, setHelperText] = useState('');
+  const navigateCad = useNavigate();
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);
 
@@ -38,26 +40,42 @@ function FormLogin() {
   const handleSubmit = (event) => {
     event.preventDefault();
 
-    if (!email || !password) {
-      if (!email) setEmailError(true);
-      if (!password) setPasswordError(true);
-      return;
-    }
-    if (!email.includes('@')) {
-      setEmailError(true);
-      return;
+    let hasError = false; // Variável para indicar se há erro na validação
+
+    // Verifica se o email está vazio
+    if (!email) {
+        setEmailError(true);
+        setHelperText("O campo de email é obrigatório");
+        hasError = true;
+    } else if (!email.includes('@')) { 
+        setEmailError(true);
+        setHelperText("Digite um email válido");
+        hasError = true;
+    } else {
+        setEmailError(false);
+        setHelperText(""); 
     }
 
-    if (password.length < 8 ) {
-      setPasswordError(true);
-      return;
+    
+    if (!password) {
+        setPasswordError(true);
+        hasError = true;
+    } else if (password.length < 8) {
+        setPasswordError(true);
+        hasError = true;
+    } else {
+        setPasswordError(false);
     }
 
-    alert('Login efetuado com sucesso!');
-  };
+
+    if (hasError) return;
+
+    Swal.fire('Login realizado!', '', 'success');
+};
+
 
   function Cadastro() {
-    navegateCad(`/cadastro`);
+    navigateCad(`/cadastro`);
   }
   function Recuperarsenha() {
     navegateCad(`/recuperar-senha`);
@@ -111,13 +129,16 @@ function FormLogin() {
         onChange={(e) => {
           setEmail(e.target.value);
           setEmailError(false);
+          setHelperText("");
         }}
+        
         error={emailError}
-        helperText={emailError ? 'Por favor, insira um email válido.' : ''}
+        helperText={helperText}
         placeholder="Digite seu email"
         InputProps={{
           sx: {
-            "& input::placeholder": { color: "gray", opacity: 1 } // Ajuste correto para o placeholder
+            "& input::placeholder": { color: "gray", opacity: 1 },
+            
           }
         }}
       />

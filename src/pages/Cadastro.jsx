@@ -4,7 +4,7 @@ import FormCadastro from "../components/FormCadastro";
 
 function Cadastro() {
   return (
-    <Box
+    <Box 
       sx={{
         textAlign: "center",
         p: 0,
@@ -12,8 +12,8 @@ function Cadastro() {
         backgroundSize: "cover",
         backgroundPosition: "center",
         backgroundColor: "#f0f0f0",
-        height: "100vh",
-        width: "100vw",
+        height: 'auto',
+        width: 'auto',
         display: "flex",
         flexDirection: "column",
         justifyContent: "center",
