@@ -25,4 +25,4 @@ function RecuperarSenha() {
   );
 }
 
-export default FormRecuperarSenha;
+export default RecuperarSenha;
