@@ -39,6 +39,25 @@ function FormLogin() {
     event.preventDefault();
   };
 
+  const usuarios = [
+    {
+      email: "teste@exemplo.com",
+      senha: "senha123",
+      nome: "Joao",
+      sobrenome:"Silva",
+      telefone: "75981648795",
+      cpf:"09865478456"
+    },
+    {
+      email: "teste2@exemplo.com",
+      senha: "senha123",
+      nome: "Maria",
+      sobrenome: "Silva",
+      telefone: "75981648795",
+      cpf:"49784625413"
+    }
+  ];
+
   const handleSubmit = (event) => {
     event.preventDefault();
 
@@ -69,7 +88,8 @@ function FormLogin() {
 
     if (hasError) return;
 
-    const usuarios = JSON.parse(localStorage.getItem("usuarios")) || []; //vou usar para recuperar os dados do LocalStorage
+    //const usuarios = JSON.parse(localStorage.getItem("usuarios")) || []; //vou usar para recuperar os dados do LocalStorage
+
 
     const user = usuarios.find((user) => user.email === email);
 
@@ -78,12 +98,17 @@ function FormLogin() {
     } else if (user.senha !== password) {
       Swal.fire("Senha incorreta!", "", "error");
     } else {
-      Swal.fire("Login realizado!", "", "success");
+      Swal.fire("Login realizado!", "", "success").then(() => {
+        Perfil(); 
+      });
     }
   };
 
   function Cadastro() {
     navigateCad(`/cadastro`);
+  }
+  function Perfil() {
+    navigateCad(`/perfil`);
   }
   function Recuperarsenha() {
     navigateCad(`/recuperar-senha`);

@@ -1,8 +1,8 @@
 import { Box } from "@mui/material";
 import background from '../assets/wallpaper.jpg';
-import FormCadastro from "../components/FormCadastro";
+import TelaPerfil from "../components/TelaPerfil";
 
-function Cadastro() {
+function Perfil() {
   return (
     <Box 
       sx={{
@@ -20,9 +20,9 @@ function Cadastro() {
         alignItems: "center",
       }}
     >
-    <FormCadastro/>
+    <TelaPerfil/>
     </Box>
   );
 }
 
-export default Cadastro;
+export default Perfil;

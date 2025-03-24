@@ -5,6 +5,7 @@ import App from './App.jsx'
 import Cadastro from './pages/Cadastro.jsx'
 import RecuperarSenha from './pages/RecuperarSenha.jsx'
 import ValidarCod from './pages/ValidarCod.jsx'
+import Perfil from './pages/Perfil.jsx'
 import { createBrowserRouter,RouterProvider } from 'react-router-dom';
 
 const router = createBrowserRouter([
@@ -23,6 +24,10 @@ const router = createBrowserRouter([
   {
     path: "/validar-codigo",
     element : <ValidarCod/>,
+  },
+  {
+    path: "/perfil",
+    element : <Perfil/>,
   },
 ]);
 
