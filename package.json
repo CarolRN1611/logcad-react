@@ -4,6 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
+    "start": "npm run dev",
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
@@ -18,7 +19,7 @@
     "react-dom": "^19.0.0",
     "react-input-mask": "^2.0.4",
     "react-router-dom": "^7.4.0",
-    "sweetalert2": "^11.17.2"
+    "sweetalert2": "^11.6.13"
   },
   "devDependencies": {
     "@eslint/js": "^9.21.0",
