@@ -56,7 +56,6 @@ function FormLogin() {
         setEmailError(false);
         setHelperText(""); 
     }
-
     
     if (!password) {
         setPasswordError(true);
