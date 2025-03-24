@@ -5,7 +5,7 @@ import FormCadastro from "../components/FormCadastro";
 function Cadastro() {
   return (
     <Box 
-    sx={{
+      sx={{
         textAlign: "center",
         p: 0,
         backgroundImage: `url(${background})`,
@@ -19,7 +19,7 @@ function Cadastro() {
         flexDirection: "column",
         justifyContent: "center",
         alignItems: "center"
-    }}
+      }}
     >
       <FormCadastro/>
     </Box>
