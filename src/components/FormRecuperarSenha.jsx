@@ -84,6 +84,7 @@ function RecuperarSenha() {
           fontWeight: 'bold',
           '&:hover': { backgroundColor: '#1565c0' },
         }}
+        onClick={() => navigate('/validar-codigo')}
       >
         Enviar
       </Button>
