@@ -109,6 +109,21 @@ function ValidarCod() {
       >
         Enviar
       </Button>
+
+      <Button
+        variant="text"
+        sx={{
+          mt: 2,
+          fontSize: "0.9rem",
+          fontWeight: "bold",
+          color: "#1976d2",
+          "&:hover": { textDecoration: "underline" },
+        }}
+        onClick={() => navigate("/recuperar-senha")}
+      >
+        Retornar
+      </Button>
+
     </Box>
   );
 }
