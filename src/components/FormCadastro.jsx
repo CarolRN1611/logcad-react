@@ -1,292 +1,363 @@
-import * as React from 'react';
-import Box from '@mui/material/Box';
-import TextField from '@mui/material/TextField';
-import Typography from "@mui/material/Typography";
-import IconButton from '@mui/material/IconButton';
-import OutlinedInput from '@mui/material/OutlinedInput';
-import InputLabel from '@mui/material/InputLabel';
-import InputAdornment from '@mui/material/InputAdornment';
-import FormControl from '@mui/material/FormControl';
-import FormHelperText from '@mui/material/FormHelperText'; // Para usar com helperText
-import Visibility from '@mui/icons-material/Visibility';
-import VisibilityOff from '@mui/icons-material/VisibilityOff';
-import Button from '@mui/material/Button';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { Box, Button, TextField, Typography, MenuItem, Select, InputLabel, FormControl, IconButton } from '@mui/material';
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
 
-
-function FormCadastro(){
-  const [showPassword, setShowPassword] = React.useState(false);
+function FormCadastro() {
+  const [etapasDoCadastro, setEtapasDoCadastro] = useState(1);
+  const [nome, setNome] = useState('');
+  const [sobrenome, setSobrenome] = useState('');
   const [email, setEmail] = useState('');
   const [emailConfirm, setEmailConfirm] = useState('');
   const [password, setPassword] = useState('');
   const [passwordConfirm, setPasswordConfirm] = useState('');
-  const [nome, setNome] = useState('');
-  const [sobrenome, setSobrenome] = useState('');
-  const [telefone, setTelefone] = useState('');
+  const [dataNascimento, setDataNascimento] = useState('');
+  const [genero, setGenero] = useState('');
   const [cpf, setCpf] = useState('');
-  const [emailError, setEmailError] = useState(false);
-  const [emailConfirmError, setEmailConfirmError] = useState(false);
-  const [passwordError, setPasswordError] = useState(false);
-  const [passwordConfirmError, setPasswordConfirmError] = useState(false);
+  const [telefone, setTelefone] = useState('');
+  const [telefoneConfirm, setTelefoneConfirm] = useState('');
+
+  // Estados para mensagens de erro
+  const [emailErro, setEmailErro] = useState('');
+  const [telefoneErro, setTelefoneErro] = useState('');
+  const [cpfErro, setCpfErro] = useState('');
+  const [senhaErro, setSenhaErro] = useState('');
+  const [dataNascimentoErro, setDataNascimentoErro] = useState('');
+  const [isFormValid, setIsFormValid] = useState(false);  // Estado para controlar se o formulário é válido ou não
+
+  const [showPassword, setShowPassword] = useState(false); // Controle de visibilidade da senha
+  const [showPasswordConfirm, setShowPasswordConfirm] = useState(false); // Controle de visibilidade da confirmação de senha
+
   const navigate = useNavigate();
 
-  const handleClickShowPassword = () => setShowPassword((show) => !show);
-
-  const handleMouseDownPassword = (event) => {
-    event.preventDefault();
+  // Função para validar o telefone em tempo real (11 dígitos no formato (11) 11111-1111)
+  const validarTelefone = (value) => {
+    const telefoneRegex = /^\(\d{2}\) \d{5}-\d{4}$/;  // Expressão regular para o formato (XX) XXXXX-XXXX
+    if (!telefoneRegex.test(value)) {
+      setTelefoneErro('O telefone deve ter o formato (XX) XXXXX-XXXX');
+      setIsFormValid(false);
+    } else {
+      setTelefoneErro('');
+      setIsFormValid(true);
+    }
   };
 
-  const handleMouseUpPassword = (event) => {
-    event.preventDefault();
+  // Função para verificar se o telefone e a confirmação de telefone são iguais
+  const verificarTelefoneConfirmacao = () => {
+    if (telefone !== telefoneConfirm) {
+      setTelefoneErro('Os telefones não coincidem. Por favor, verifique.');
+      setIsFormValid(false);
+    } else {
+      setTelefoneErro('');
+      setIsFormValid(true);
+    }
   };
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
+  // Função para validar a senha em tempo real
+  const validarSenha = () => {
+    if (password !== passwordConfirm) {
+      setSenhaErro('As senhas não coincidem. Por favor, verifique.');
+      setIsFormValid(false);
+    } else {
+      setSenhaErro('');
+      setIsFormValid(true);
+    }
+  };
 
-    if (!email || !emailConfirm || !password || !passwordConfirm || !nome || !sobrenome || !telefone || !cpf) {
-      if (!email) setEmailError(true);
-      if (!emailConfirm) setEmailConfirmError(true);
-      if (!password) setPasswordError(true);
-      if (!passwordConfirm) setPasswordConfirmError(true);
+  // Função para formatar o CPF no formato XXX.XXX.XXX-XX
+  const formatarCpf = (value) => {
+    // Remove qualquer caractere não numérico
+    const cpfLimpo = value.replace(/\D/g, '');
+    
+    // Aplica a formatação: XXX.XXX.XXX-XX
+    if (cpfLimpo.length <= 11) {
+      const formattedCpf = cpfLimpo
+        .replace(/^(\d{3})(\d{3})(\d{3})(\d{2})$/, '$1.$2.$3-$4');
+      setCpf(formattedCpf);
+    }
+  };
+
+  // Função para verificar se o CPF tem exatamente 11 dígitos
+  const validarCpf = (value) => {
+    const cpfLimpo = value.replace(/\D/g, '');
+    if (cpfLimpo.length !== 11) {
+      setCpfErro('O CPF deve ter 11 dígitos.');
+      setIsFormValid(false);
+    } else {
+      setCpfErro('');
+      setIsFormValid(true);
+    }
+  };
+
+  // Função para validar a data de nascimento (minimo 18 anos)
+  const validarDataNascimento = (value) => {
+    const dataNascimentoFormatada = new Date(value);
+    const hoje = new Date();
+    const idade = hoje.getFullYear() - dataNascimentoFormatada.getFullYear();
+    const mes = hoje.getMonth() - dataNascimentoFormatada.getMonth();
+
+    if (idade < 18 || (idade === 18 && mes < 0)) {
+      setDataNascimentoErro('Você precisa ter pelo menos 18 anos para se cadastrar.');
+      setIsFormValid(false);
+    } else {
+      setDataNascimentoErro('');
+      setIsFormValid(true);
+    }
+  };
+
+  // Verificar se os campos obrigatórios da etapa estão preenchidos
+  const verificarCamposPreenchidos = () => {
+    if (etapasDoCadastro === 1) {
+      return nome && sobrenome;
+    }
+    if (etapasDoCadastro === 2) {
+      return email && emailConfirm;
+    }
+    if (etapasDoCadastro === 3) {
+      return telefone && telefoneConfirm;
+    }
+    if (etapasDoCadastro === 4) {
+      return dataNascimento && genero && cpf;
+    }
+    if (etapasDoCadastro === 5) {
+      return password && passwordConfirm;
+    }
+    return false;
+  };
+
+  const avancarEtapa = () => {
+    // Validação do e-mail
+    if (etapasDoCadastro === 2 && (email === '' || !email.includes('@') || email !== emailConfirm)) {
+      setEmailErro('Por favor, verifique os e-mails.');
       return;
     }
-    if (!email.includes('@')) {
-      setEmailError(true);
-      return;
-    }
-    if (email !== emailConfirm) {
-      setEmailConfirmError(true);
-      return;
-    }
-    if (password.length < 8 || password !== passwordConfirm) {
-      setPasswordError(true);
-      setPasswordConfirmError(true);
-      return;
-    }
-    Swal.fire({
-      title: "Você tem certeza?",
-      text: "Você deseja cadastrar ?",
-      icon: "question",
-      showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Sim, cadastrar!"
-    }).then((result) => {
-      if (result.isConfirmed) {
-        Swal.fire({
-          title: "Cadastrado com sucesso!",
-          text: "O usuário foi cadastrado.",
-          icon: "success"
-        }).then(() => {
-          Login(); 
-        });
+
+    // Validação do telefone
+    if (etapasDoCadastro === 3) {
+      if (telefone === '' || !/^\(\d{2}\) \d{5}-\d{4}$/.test(telefone)) {
+        setTelefoneErro('O telefone deve ter o formato (XX) XXXXX-XXXX');
+        return;
       }
-    });    
+
+      if (telefoneConfirm === '' || !/^\(\d{2}\) \d{5}-\d{4}$/.test(telefoneConfirm)) {
+        setTelefoneErro('O telefone de confirmação deve ter o formato (XX) XXXXX-XXXX');
+        return;
+      }
+
+      // Verificar se telefone e confirmar telefone são iguais
+      if (telefone !== telefoneConfirm) {
+        setTelefoneErro('Os telefones não coincidem. Por favor, verifique.');
+        return;
+      }
+    }
+
+    // Validação de CPF
+    if (etapasDoCadastro === 4 && cpf.replace(/\D/g, '').length !== 11) {
+      setCpfErro('O CPF deve ter 11 dígitos.');
+      return;
+    }
+
+    // Validação de data de nascimento (mínimo 18 anos)
+    if (etapasDoCadastro === 4 && !dataNascimento) {
+      setDataNascimentoErro('A data de nascimento é obrigatória.');
+      return;
+    }
+
+    // Validação de senha
+    if (etapasDoCadastro === 5 && password !== passwordConfirm) {
+      setSenhaErro('As senhas não coincidem. Por favor, verifique.');
+      return;
+    }
+
+    // Limpa mensagens de erro
+    setEmailErro('');  // Limpa erro de e-mail
+    setTelefoneErro('');  // Limpa erro de telefone
+    setCpfErro('');  // Limpa erro de CPF
+    setSenhaErro('');  // Limpa erro de senha
+    setDataNascimentoErro('');  // Limpa erro de data de nascimento
+
+    if (etapasDoCadastro < 5) {
+      setEtapasDoCadastro(etapasDoCadastro + 1);
+    } else {
+      Swal.fire("Cadastrado com sucesso!", "Usuário registrado.", "success")
+        .then(() => navigate("/"));
+    }
   };
 
-  function Login() {
-    navigate(`/`);
-  }
+  const voltarEtapa = () => {
+    if (etapasDoCadastro > 1) {
+      setEtapasDoCadastro(etapasDoCadastro - 1);
+    } else {
+      navigate("/"); // 🔹 Redireciona para a página inicial se estiver na primeira etapa
+    }
+  };
+
+  // Habilitar ou desabilitar o botão "Avançar" com base na verificação de campos preenchidos
+  useEffect(() => {
+    setIsFormValid(verificarCamposPreenchidos());
+  }, [etapasDoCadastro, nome, sobrenome, email, emailConfirm, telefone, telefoneConfirm, dataNascimento, genero, cpf, password, passwordConfirm]);
 
   return (
     <Box
       component="form"
-      sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: 4,
-        width: '90%',
-        maxWidth: 400,
-        backgroundColor: '#fff',
-        borderRadius: 4,
-        boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)',
-        margin: '10vh auto',
-      }}
+      sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', p: 4, width: '90%', maxWidth: 400, backgroundColor: '#fff', borderRadius: 4, boxShadow: 3, margin: '10vh auto' }}
       noValidate
       autoComplete="off"
-      onSubmit={handleSubmit}
     >
-      <Typography 
-        variant="h4" 
-        sx={{
-          fontWeight: 'bold', color: '#333', mb: 2
-        }}
-      >
-        Cadastre-se
-      </Typography>
+      <Typography variant="h4" sx={{ fontWeight: 'bold', mb: 2 }}>Cadastre-se</Typography>
 
-      <Typography 
-        variant="body1" 
-        sx={{
-          color: '#555', mb: 3 
-        }}
-      >
-        Insira suas informações abaixo.
-      </Typography>
+      {etapasDoCadastro === 1 && (
+        <>
+          <TextField sx={{ m: 1, width: '100%' }} required label="Nome" value={nome} onChange={(e) => setNome(e.target.value)} />
+          <TextField sx={{ m: 1, width: '100%' }} required label="Sobrenome" value={sobrenome} onChange={(e) => setSobrenome(e.target.value)} />
+        </>
+      )}
 
-      <TextField
-        sx={{ m: 1, width: '100%' }}
-        required
-        label="Nome"
-        variant="outlined"
-        value={nome}
-        onChange={(e) => setNome(e.target.value)}
-        placeholder="Digite seu nome"
-      />
+      {etapasDoCadastro === 2 && (
+        <>
+          <TextField sx={{ m: 1, width: '100%' }} required label="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
+          <TextField sx={{ m: 1, width: '100%' }} required label="Confirme o Email" value={emailConfirm} onChange={(e) => setEmailConfirm(e.target.value)} />
+          {emailErro && <Typography color="error" sx={{ mt: 1 }}>{emailErro}</Typography>}
+        </>
+      )}
 
-      <TextField
-        sx={{ m: 1, width: '100%' }}
-        required
-        label="Sobrenome"
-        variant="outlined"
-        value={sobrenome}
-        onChange={(e) => setSobrenome(e.target.value)}
-        placeholder="Digite seu sobrenome"
-      />
+      {etapasDoCadastro === 3 && (
+        <>
+          <TextField
+            sx={{ m: 1, width: '100%' }}
+            required
+            label="Telefone"
+            value={telefone}
+            onChange={(e) => {
+              const value = e.target.value;
+              const formattedTelefone = value.replace(/\D/g, '').replace(/^(\d{2})(\d{5})(\d{4})$/, '($1) $2-$3');
+              if (formattedTelefone.replace(/\D/g, '').length <= 11) {
+                setTelefone(formattedTelefone);
+                validarTelefone(formattedTelefone);
+              }
+            }}
+          />
+          <TextField
+            sx={{ m: 1, width: '100%' }}
+            required
+            label="Confirme o Telefone"
+            value={telefoneConfirm}
+            onChange={(e) => {
+              const value = e.target.value;
+              const formattedTelefoneConfirm = value.replace(/\D/g, '').replace(/^(\d{2})(\d{5})(\d{4})$/, '($1) $2-$3');
+              if (formattedTelefoneConfirm.replace(/\D/g, '').length <= 11) {
+                setTelefoneConfirm(formattedTelefoneConfirm);
+                verificarTelefoneConfirmacao();
+              }
+            }}
+          />
+          {telefoneErro && <Typography color="error" sx={{ mt: 1 }}>{telefoneErro}</Typography>}
+        </>
+      )}
 
-      <TextField
-        sx={{ m: 1, width: '100%' }}
-        required
-        label="Email"
-        variant="outlined"
-        value={email}
-        onChange={(e) => {
-          setEmail(e.target.value);
-          setEmailError(false);
-        }}
-        error={emailError}
-        helperText={emailError ? 'Por favor, insira um email válido.' : ''}
-        placeholder="Digite seu email"
-      />
+      {etapasDoCadastro === 4 && (
+        <>
+          <TextField
+            sx={{ m: 1, width: '100%' }}
+            required
+            label="Data de Nascimento"
+            value={dataNascimento}
+            onChange={(e) => {
+              const value = e.target.value;
+              setDataNascimento(value);
+              validarDataNascimento(value);
+            }}
+            type="date"
+            InputLabelProps={{ shrink: true }}
+          />
+          {dataNascimentoErro && <Typography color="error" sx={{ mt: 1 }}>{dataNascimentoErro}</Typography>}
+          <FormControl fullWidth sx={{ m: 1 }}>
+            <InputLabel>Gênero</InputLabel>
+            <Select
+              value={genero}
+              onChange={(e) => setGenero(e.target.value)}
+              label="Gênero"
+            >
+              <MenuItem value="masculino">Masculino</MenuItem>
+              <MenuItem value="feminino">Feminino</MenuItem>
+              <MenuItem value="outro">Outro</MenuItem>
+            </Select>
+          </FormControl>
+          <TextField
+            sx={{ m: 1, width: '100%' }}
+            required
+            label="CPF"
+            value={cpf}
+            onChange={(e) => {
+              const value = e.target.value;
+              formatarCpf(value);
+              validarCpf(value);
+            }}
+          />
+          {cpfErro && <Typography color="error" sx={{ mt: 1 }}>{cpfErro}</Typography>}
+        </>
+      )}
 
-      <TextField
-        sx={{ m: 1, width: '100%' }}
-        required
-        label="Confirme o Email"
-        variant="outlined"
-        value={emailConfirm}
-        onChange={(e) => {
-          setEmailConfirm(e.target.value);
-          setEmailConfirmError(false);
-        }}
-        error={emailConfirmError}
-        helperText={emailConfirmError ? 'Os emails não coincidem.' : ''}
-        placeholder="Confirme seu email"
-      />
+      {etapasDoCadastro === 5 && (
+        <>
+          <TextField
+            sx={{ m: 1, width: '100%' }}
+            required
+            label="Senha"
+            type={showPassword ? "text" : "password"}
+            value={password}
+            onChange={(e) => {
+              setPassword(e.target.value);
+              validarSenha();
+            }}
+          />
+          <IconButton
+            onClick={() => setShowPassword(!showPassword)}
+            sx={{ position: 'absolute', right: '10px', top: '72%' }}
+          >
+            {showPassword ? <VisibilityOff /> : <Visibility />}
+          </IconButton>
+          <TextField
+            sx={{ m: 1, width: '100%' }}
+            required
+            label="Confirme a Senha"
+            type={showPasswordConfirm ? "text" : "password"}
+            value={passwordConfirm}
+            onChange={(e) => {
+              setPasswordConfirm(e.target.value);
+              validarSenha();
+            }}
+          />
+          <IconButton
+            onClick={() => setShowPasswordConfirm(!showPasswordConfirm)}
+            sx={{ position: 'absolute', right: '10px', top: '85%' }}
+          >
+            {showPasswordConfirm ? <VisibilityOff /> : <Visibility />}
+          </IconButton>
+          {senhaErro && <Typography color="error" sx={{ mt: 1 }}>{senhaErro}</Typography>}
+        </>
+      )}
 
-      <FormControl sx={{ m: 1, width: '100%' }} variant="outlined" required error={passwordError}>
-        <InputLabel htmlFor="outlined-adornment-password">Senha</InputLabel>
-        <OutlinedInput
-          id="outlined-adornment-password"
-          type={showPassword ? 'text' : 'password'}
-          value={password}
-          onChange={(e) => {
-            setPassword(e.target.value);
-            setPasswordError(false);
-          }}
-          placeholder="Digite sua senha"
-          endAdornment={
-            <InputAdornment position="end">
-              <IconButton
-                aria-label={showPassword ? 'hide the password' : 'display the password'}
-                onClick={handleClickShowPassword}
-                onMouseDown={handleMouseDownPassword}
-                onMouseUp={handleMouseUpPassword}
-                edge="end"
-              >
-                {showPassword ? <VisibilityOff /> : <Visibility />}
-              </IconButton>
-            </InputAdornment>
-          }
-          label="Senha"
-        />
-        {passwordError && (
-          <FormHelperText error> A senha deve ter pelo menos 8 caracteres. </FormHelperText>
-        )}
-      </FormControl>
-
-      <FormControl sx={{ m: 1, width: '100%' }} variant="outlined" required error={passwordConfirmError}>
-        <InputLabel htmlFor="outlined-adornment-password-confirm">Confirme a Senha</InputLabel>
-        <OutlinedInput
-          id="outlined-adornment-password-confirm"
-          type={showPassword ? 'text' : 'password'}
-          value={passwordConfirm}
-          onChange={(e) => {
-            setPasswordConfirm(e.target.value);
-            setPasswordConfirmError(false);
-          }}
-          placeholder="Confirme sua senha"
-          endAdornment={
-            <InputAdornment position="end">
-              <IconButton
-                aria-label={showPassword ? 'hide the password' : 'display the password'}
-                onClick={handleClickShowPassword}
-                onMouseDown={handleMouseDownPassword}
-                onMouseUp={handleMouseUpPassword}
-                edge="end"
-              >
-                {showPassword ? <VisibilityOff /> : <Visibility />}
-              </IconButton>
-            </InputAdornment>
-          }
-          label="Confirme a Senha"
-        />
-        {passwordConfirmError && (
-          <FormHelperText error> As senhas não coincidem. </FormHelperText>
-        )}
-      </FormControl>
-
-      <TextField
-        sx={{ m: 1, width: '100%' }}
-        required
-        label="Telefone"
-        variant="outlined"
-        value={telefone}
-        onChange={(e) => setTelefone(e.target.value)}
-        placeholder="Digite seu telefone"
-      />
-
-      <TextField
-        sx={{ m: 1, width: '100%' }}
-        required
-        label="CPF"
-        variant="outlined"
-        value={cpf}
-        onChange={(e) => setCpf(e.target.value)}
-        placeholder="Digite seu CPF"
-      />
-
-      <Button type="submit" variant="contained" sx={{
-        mt: 3,
-        p: 1.5,
-        width: '100%',
-        backgroundColor: '#1976d2',
-        color: 'white',
-        fontWeight: 'bold',
-        '&:hover': { backgroundColor: '#1565c0' },
-      }}>
-        Cadastrar
-      </Button>
-
-      <Button
-        variant="text"
-        sx={{
-          mt: 2,
-          fontSize: '0.9rem',
-          fontWeight: 'bold',
-          color: '#1976d2',
-          '&:hover': { textDecoration: 'underline' },
-        }}
-        onClick={() => navigate('/')}
-      >
-        Voltar para Login
-      </Button>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%', mt: 2 }}>
+        <Button
+          variant="contained"
+          onClick={voltarEtapa}
+          sx={{ backgroundColor: 'white', color: 'blue', '&:hover': { backgroundColor: '#f5f5f5' } }}  // Cor branca para o botão
+        >
+          Voltar
+        </Button>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={avancarEtapa}
+          disabled={!isFormValid}  // Habilita o botão apenas se o formulário for válido
+        >
+          {etapasDoCadastro === 5 ? 'Finalizar' : 'Avançar'}
+        </Button>
+      </Box>
     </Box>
-    
   );
 }
 
