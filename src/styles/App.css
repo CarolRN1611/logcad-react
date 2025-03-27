@@ -1,15 +1,41 @@
 .app-container {
-    text-align: center;
-    margin-top: 0;
-    padding: 0;
-    background-image: url("./src/assets/wallpaper.jpg");
-    background-size: cover;
-    background-position: center;
-    height: 100vh;
-    width: 100vw;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-  }
-  
+  text-align: center;
+  margin-top: 0;
+  padding: 0;
+  background-image: url("./src/assets/wallpaper.jpg");
+  background-size: cover;
+  background-position: center;
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+/* src/styles/DigitBox.module.css */
+
+.digitBox {
+  width: 50px;                    /* Largura do quadrado */
+  height: 50px;                   /* Altura do quadrado */
+  font-size: 24px;                /* Tamanho da fonte */
+  text-align: center;             /* Centraliza o texto dentro do quadrado */
+  margin: 0 5px;                  /* Espaçamento entre os quadrados */
+  border: 2px solid #ccc;         /* Cor e estilo da borda */
+  border-radius: 5px;             /* Bordas arredondadas */
+}
+
+.digitBox:focus {
+  border-color: #007bff;          /* Cor da borda ao focar */
+  outline: none;                  /* Remove o contorno padrão */
+}
+
+.digitInputs {
+  display: flex;                  /* Alinha os elementos em linha */
+  justify-content: center;        /* Centraliza horizontalmente */
+  align-items: center;            /* Alinha verticalmente */
+  margin-bottom: 20px;           /* Espaço inferior */
+}
+
+
+
