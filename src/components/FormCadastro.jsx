@@ -2,8 +2,9 @@ import { useState, useEffect } from 'react';
 import { Box, Button, TextField, Typography, MenuItem, Select, InputLabel, FormControl, IconButton } from '@mui/material';
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
-import Visibility from '@mui/icons-material/Visibility';
-import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import Visibility from "@mui/icons-material/Visibility";
+import VisibilityOff from "@mui/icons-material/VisibilityOff";
+import { LinearProgress } from "@mui/material";
 
 function FormCadastro() {
   const [etapasDoCadastro, setEtapasDoCadastro] = useState(1);
@@ -29,6 +30,7 @@ function FormCadastro() {
 
   const [showPassword, setShowPassword] = useState(false); // Controle de visibilidade da senha
   const [showPasswordConfirm, setShowPasswordConfirm] = useState(false); // Controle de visibilidade da confirmação de senha
+  const [strength, setStrength] = useState(0);
 
   const navigate = useNavigate();
 
@@ -36,28 +38,60 @@ function FormCadastro() {
   const validarTelefone = (value) => {
     const telefoneRegex = /^\(\d{2}\) \d{5}-\d{4}$/;  // Expressão regular para o formato (XX) XXXXX-XXXX
     if (!telefoneRegex.test(value)) {
-      setTelefoneErro('O telefone deve ter o formato (XX) XXXXX-XXXX');
+      setTelefoneErro("O telefone deve ter o formato (XX) XXXXX-XXXX");
       setIsFormValid(false);
     } else {
-      setTelefoneErro('');
+      setTelefoneErro("");
       setIsFormValid(true);
     }
+  };
+
+  const calculateStrength = (password) => {
+    let strength = 0;
+
+    // Comprimento mínimo de 8 caracteres
+    if (password.length >= 8) strength += 25;
+
+    // Tem pelo menos um número
+    if (/\d/.test(password)) strength += 25;
+
+    // Tem pelo menos uma letra maiúscula
+    if (/[A-Z]/.test(password)) strength += 25;
+
+    // Tem pelo menos um caractere especial
+    if (/[!@#$%^&*(),.?":{}|<>]/.test(password)) strength += 25;
+
+    return strength;
+  };
+
+  const handlePasswordChange = (e) => {
+    const password = e.target.value;
+    setPassword(password);
+    const strength = calculateStrength(password);
+    setStrength(strength);
+  };
+
+  // Definir a cor da barra de progresso com base na força
+  const getProgressColor = () => {
+    if (strength < 50) return "error"; // Vermelho
+    if (strength < 75) return "warning"; // Amarelo
+    return "success"; // Verde
   };
 
   // Função para verificar se o telefone e a confirmação de telefone são iguais
   const verificarTelefoneConfirmacao = () => {
     if (telefone !== telefoneConfirm) {
-      setTelefoneErro('Os telefones não coincidem. Por favor, verifique.');
+      setTelefoneErro("Os telefones não coincidem. Por favor, verifique.");
       setIsFormValid(false);
     } else {
-      setTelefoneErro('');
+      setTelefoneErro("");
       setIsFormValid(true);
     }
   };
 
   // Função para validar a senha em tempo real
   const validarSenha = () => {
-    if (password !== passwordConfirm) {
+    if (password != passwordConfirm) {
       setSenhaErro('As senhas não coincidem. Por favor, verifique.');
       setIsFormValid(false);
     } else {
@@ -72,7 +106,7 @@ function FormCadastro() {
     const cpfLimpo = value.replace(/\D/g, '');
     
     // Aplica a formatação: XXX.XXX.XXX-XX
-    if (cpfLimpo.length <= 11) {
+    if (cpfLimpo.length < 12) {
       const formattedCpf = cpfLimpo
         .replace(/^(\d{3})(\d{3})(\d{3})(\d{2})$/, '$1.$2.$3-$4');
       setCpf(formattedCpf);
@@ -129,9 +163,17 @@ function FormCadastro() {
 
   const avancarEtapa = () => {
     // Validação do e-mail
-    if (etapasDoCadastro === 2 && (email === '' || !email.includes('@') || email !== emailConfirm)) {
-      setEmailErro('Por favor, verifique os e-mails.');
-      return;
+
+    let hasError = false;
+    if (etapasDoCadastro === 2 && (email === "" || !email.includes("@"))) {
+      setEmailErro("Email Invalido! Por favor, verifique.");
+      hasError = true;
+    } else if (
+      etapasDoCadastro === 2 &&
+      (email === "" || email !== emailConfirm)
+    ) {
+      setEmailErro("Os e-mails não coincidem. Por favor, verifique.");
+      hasError = true;
     }
 
     // Validação do telefone
@@ -170,19 +212,45 @@ function FormCadastro() {
       setSenhaErro('As senhas não coincidem. Por favor, verifique.');
       return;
     }
+    
+
+    if (hasError) return;
 
     // Limpa mensagens de erro
-    setEmailErro('');  // Limpa erro de e-mail
-    setTelefoneErro('');  // Limpa erro de telefone
-    setCpfErro('');  // Limpa erro de CPF
-    setSenhaErro('');  // Limpa erro de senha
-    setDataNascimentoErro('');  // Limpa erro de data de nascimento
+    setEmailErro(""); // Limpa erro de e-mail
+    setTelefoneErro(""); // Limpa erro de telefone
+    setCpfErro(""); // Limpa erro de CPF
+    setSenhaErro(""); // Limpa erro de senha
+    setDataNascimentoErro(""); // Limpa erro de data de nascimento
+
+    const usuarios = JSON.parse(localStorage.getItem("usuarios")) || [];
+
+    const formData = {
+      id: usuarios.length + 1,
+      nome,
+      sobrenome,
+      email,
+      password,
+      dataNascimento,
+      genero,
+      cpf,
+      telefone,
+    };
 
     if (etapasDoCadastro < 5) {
       setEtapasDoCadastro(etapasDoCadastro + 1);
     } else {
-      Swal.fire("Cadastrado com sucesso!", "Usuário registrado.", "success")
-        .then(() => navigate("/"));
+      usuarios.push(formData);
+      localStorage.setItem("usuarios", JSON.stringify(usuarios));
+      console.log(
+        "Usuarios no localStorage:",
+        localStorage.getItem("usuarios")
+      );
+      Swal.fire(
+        "Cadastrado com sucesso!",
+        "Usuário registrado.",
+        "success"
+      ).then(() => navigate("/"));
     }
   };
 
@@ -232,12 +300,15 @@ function FormCadastro() {
             value={telefone}
             onChange={(e) => {
               const value = e.target.value;
-              const formattedTelefone = value.replace(/\D/g, '').replace(/^(\d{2})(\d{5})(\d{4})$/, '($1) $2-$3');
-              if (formattedTelefone.replace(/\D/g, '').length <= 11) {
+              const formattedTelefone = value
+                .replace(/\D/g, "")
+                .replace(/^(\d{2})(\d{5})(\d{4})$/, "($1) $2-$3");
+              if (formattedTelefone.replace(/\D/g, "").length <= 11) {
                 setTelefone(formattedTelefone);
                 validarTelefone(formattedTelefone);
               }
             }}
+            inputProps={{ maxLength: 14 }}
           />
           <TextField
             sx={{ m: 1, width: '100%' }}
@@ -246,21 +317,28 @@ function FormCadastro() {
             value={telefoneConfirm}
             onChange={(e) => {
               const value = e.target.value;
-              const formattedTelefoneConfirm = value.replace(/\D/g, '').replace(/^(\d{2})(\d{5})(\d{4})$/, '($1) $2-$3');
-              if (formattedTelefoneConfirm.replace(/\D/g, '').length <= 11) {
+              const formattedTelefoneConfirm = value
+                .replace(/\D/g, "")
+                .replace(/^(\d{2})(\d{5})(\d{4})$/, "($1) $2-$3");
+              if (formattedTelefoneConfirm.replace(/\D/g, "").length <= 11) {
                 setTelefoneConfirm(formattedTelefoneConfirm);
                 verificarTelefoneConfirmacao();
               }
             }}
+            inputProps={{ maxLength: 14 }}
           />
-          {telefoneErro && <Typography color="error" sx={{ mt: 1 }}>{telefoneErro}</Typography>}
+          {telefoneErro && (
+            <Typography color="error" sx={{ mt: 1 }}>
+              {telefoneErro}
+            </Typography>
+          )}
         </>
       )}
 
       {etapasDoCadastro === 4 && (
         <>
           <TextField
-            sx={{ m: 1, width: '100%' }}
+            sx={{ m: 1, width: "100%" }}
             required
             label="Data de Nascimento"
             value={dataNascimento}
@@ -271,8 +349,14 @@ function FormCadastro() {
             }}
             type="date"
             InputLabelProps={{ shrink: true }}
+            InputProps={{
+              inputProps: {
+                max: new Date().toISOString().split("T")[0],
+              },
+            }}
           />
           {dataNascimentoErro && <Typography color="error" sx={{ mt: 1 }}>{dataNascimentoErro}</Typography>}
+
           <FormControl fullWidth sx={{ m: 1 }}>
             <InputLabel>Gênero</InputLabel>
             <Select
@@ -293,8 +377,9 @@ function FormCadastro() {
             onChange={(e) => {
               const value = e.target.value;
               formatarCpf(value);
-              validarCpf(value);
+              validarCpf
             }}
+            inputProps={{ maxLength: 14 }}
           />
           {cpfErro && <Typography color="error" sx={{ mt: 1 }}>{cpfErro}</Typography>}
         </>
@@ -310,15 +395,48 @@ function FormCadastro() {
             value={password}
             onChange={(e) => {
               setPassword(e.target.value);
-              validarSenha();
+              handlePasswordChange(e);
+            }}
+            onBlur={validarSenha}
+            InputProps={{
+              endAdornment: (
+                <IconButton
+                  onClick={() => setShowPassword(!showPassword)}
+                  sx={{ position: 'absolute', right: '10px', top: '20%' }}
+                >
+                  {showPassword ? <VisibilityOff /> : <Visibility />}
+                </IconButton>
+              ),
             }}
           />
-          <IconButton
-            onClick={() => setShowPassword(!showPassword)}
-            sx={{ position: 'absolute', right: '10px', top: '72%' }}
-          >
-            {showPassword ? <VisibilityOff /> : <Visibility />}
-          </IconButton>
+          <Box sx={{ width: '100%' }}>
+            {/* Barra de progresso para a força da senha */}
+          <LinearProgress
+              variant="determinate"
+              value={strength}
+              color={getProgressColor()}
+              sx={{ mt: 1, height: 10, borderRadius: 5 }}
+            />
+
+            {/* Texto indicando a força da senha */}
+            <Typography variant="caption"  sx={{ mt: 1, textAlign: 'right',fontSize: '0.9rem',
+                color: strength === 100 
+                  ? '#28a745'  
+                  : strength >= 75 
+                  ? '#ffc107'  
+                  : strength >= 50 
+                  ? '#fd7e14'  
+                  : '#dc3545'}}
+            >
+              {strength === 100
+                ? "Senha forte"
+                : strength >= 75
+                ? "Senha boa"
+                : strength >= 50
+                ? "Senha média"
+                : "Senha fraca"}
+            </Typography>
+          </Box>
           <TextField
             sx={{ m: 1, width: '100%' }}
             required
@@ -327,15 +445,20 @@ function FormCadastro() {
             value={passwordConfirm}
             onChange={(e) => {
               setPasswordConfirm(e.target.value);
-              validarSenha();
+            }}
+            onBlur={validarSenha}
+            InputProps={{
+              endAdornment: (
+                <IconButton
+                  onClick={() => setShowPasswordConfirm(!showPasswordConfirm)}
+                  sx={{ position: 'absolute', right: '10px', top: '20%' }}
+                >
+                  {showPasswordConfirm ? <VisibilityOff /> : <Visibility />}
+                </IconButton>
+              ),
             }}
           />
-          <IconButton
-            onClick={() => setShowPasswordConfirm(!showPasswordConfirm)}
-            sx={{ position: 'absolute', right: '10px', top: '85%' }}
-          >
-            {showPasswordConfirm ? <VisibilityOff /> : <Visibility />}
-          </IconButton>
+
           {senhaErro && <Typography color="error" sx={{ mt: 1 }}>{senhaErro}</Typography>}
         </>
       )}

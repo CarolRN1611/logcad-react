@@ -26,7 +26,7 @@ const router = createBrowserRouter([
     element : <ValidarCod/>,
   },
   {
-    path: "/perfil",
+    path: "/perfil/:id",
     element : <Perfil/>,
   },
 ]);

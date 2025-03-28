@@ -1,8 +1,13 @@
 import { Box } from "@mui/material";
 import background from "../assets/wallpaper.jpg";
 import TelaPerfil from "../components/TelaPerfil";
+import { useParams } from "react-router-dom";
 
 function Perfil() {
+
+  const { id } = useParams();
+  console.log("ID recebido:", id);
+
   return (
     <Box
       sx={{
@@ -21,7 +26,7 @@ function Perfil() {
         alignItems: "center"
       }}
     >
-      <TelaPerfil />
+      <TelaPerfil id={id}/>
     </Box>
   );
 }
