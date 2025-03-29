@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import swal from 'sweetalert2';
 
-function ValidarCod() {
+function ValidarCodigo() {
   const navigate = useNavigate();
 
   const handleSubmit = (event) => {
@@ -18,7 +18,7 @@ function ValidarCod() {
     
     const digitSequence = digits.join(''); // Junta os dígitos em uma string
     alert(`Sequência digitada: ${digitSequence}`);
-    navigate('/novaSenha');
+    navigate('/alterar-senha');
   };
 
   const [digits, setDigits] = useState(Array(6).fill(''));
@@ -128,4 +128,4 @@ function ValidarCod() {
   );
 }
 
-export default ValidarCod;
+export default ValidarCodigo;

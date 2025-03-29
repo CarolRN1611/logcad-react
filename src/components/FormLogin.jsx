@@ -93,6 +93,12 @@ function FormLogin() {
   function Recuperarsenha() {
     navigateCad(`/recuperar-senha`);
   }
+  function Alterarsenha() {
+    navigateCad(`/alterar-senha`);
+  }
+  function Validarsenha() {
+    navigateCad(`/validar-senha`);
+  }
 
   return (
     <Box

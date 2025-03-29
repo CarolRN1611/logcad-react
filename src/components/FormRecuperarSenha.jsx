@@ -16,7 +16,7 @@ function RecuperarSenha() {
     event.preventDefault();
 
     // Verificar se o e-mail contém o "@" e o "."
-    if (!email.includes("@") || !email.includes(".")) {
+    if (!email.includes("@") || !email.includes(".") || email.includes("@.")) {
       setEmailError(true);
       return;
     }

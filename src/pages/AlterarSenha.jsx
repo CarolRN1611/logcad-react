@@ -1,8 +1,8 @@
 import { Box } from "@mui/material";
 import background from '../assets/wallpaper.jpg';
-import FormValidarCod from "../components/FormValidarCod";
+import FormAlterarSenha from "../components/FormAlterarSenha";
 
-function ValidarCod() {
+function AlterarSenha() {
   return (
     <Box
       sx={{
@@ -20,9 +20,9 @@ function ValidarCod() {
         alignItems: "center",
       }}
     >
-      <FormValidarCod/>
+      <FormAlterarSenha/>
     </Box>
   );
 }
 
-export default ValidarCod;
+export default AlterarSenha;
