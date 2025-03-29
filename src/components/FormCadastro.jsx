@@ -31,6 +31,7 @@ function FormCadastro() {
   const [showPassword, setShowPassword] = useState(false); // Controle de visibilidade da senha
   const [showPasswordConfirm, setShowPasswordConfirm] = useState(false); // Controle de visibilidade da confirmação de senha
   const [strength, setStrength] = useState(0);
+  const usuarios = JSON.parse(localStorage.getItem("usuarios")) || [];
 
   const navigate = useNavigate();
 
@@ -48,17 +49,12 @@ function FormCadastro() {
 
   const calculateStrength = (password) => {
     let strength = 0;
-
-    // Comprimento mínimo de 8 caracteres
     if (password.length >= 8) strength += 25;
 
-    // Tem pelo menos um número
     if (/\d/.test(password)) strength += 25;
 
-    // Tem pelo menos uma letra maiúscula
     if (/[A-Z]/.test(password)) strength += 25;
 
-    // Tem pelo menos um caractere especial
     if (/[!@#$%^&*(),.?":{}|<>]/.test(password)) strength += 25;
 
     return strength;
@@ -71,11 +67,11 @@ function FormCadastro() {
     setStrength(strength);
   };
 
-  // Definir a cor da barra de progresso com base na força
+  
   const getProgressColor = () => {
-    if (strength < 50) return "error"; // Vermelho
-    if (strength < 75) return "warning"; // Amarelo
-    return "success"; // Verde
+    if (strength < 50) return "error"; 
+    if (strength < 75) return "warning"; 
+    return "success"; 
   };
 
   // Função para verificar se o telefone e a confirmação de telefone são iguais
@@ -84,7 +80,7 @@ function FormCadastro() {
       setTelefoneErro("Os telefones não coincidem. Por favor, verifique.");
       setIsFormValid(false);
     } else {
-      setTelefoneErro("");
+      setTelefoneErro(" ");
       setIsFormValid(true);
     }
   };
@@ -119,7 +115,8 @@ function FormCadastro() {
     if (cpfLimpo.length !== 11) {
       setCpfErro('O CPF deve ter 11 dígitos.');
       setIsFormValid(false);
-    } else {
+    }
+     else {
       setCpfErro('');
       setIsFormValid(true);
     }
@@ -164,17 +161,22 @@ function FormCadastro() {
   const avancarEtapa = () => {
     // Validação do e-mail
 
+    const usuarioExistente = usuarios.find((usuario) => usuario.email === email);
     let hasError = false;
-    if (etapasDoCadastro === 2 && (email === "" || !email.includes("@"))) {
-      setEmailErro("Email Invalido! Por favor, verifique.");
-      hasError = true;
-    } else if (
-      etapasDoCadastro === 2 &&
-      (email === "" || email !== emailConfirm)
-    ) {
-      setEmailErro("Os e-mails não coincidem. Por favor, verifique.");
-      hasError = true;
+
+    if (etapasDoCadastro === 2) {
+      if (email === "" || !email.includes("@")) {
+        setEmailErro("Email inválido! Por favor, verifique.");
+        hasError = true;
+      } else if (email !== emailConfirm) {
+        setEmailErro("Os e-mails não coincidem. Por favor, verifique.");
+        hasError = true;
+      } else if (usuarioExistente !== undefined) {
+        setEmailErro("Este e-mail já está cadastrado. Por favor, utilize outro.");
+        hasError = true;
+      }
     }
+
 
     // Validação do telefone
     if (etapasDoCadastro === 3) {
@@ -223,7 +225,6 @@ function FormCadastro() {
     setSenhaErro(""); // Limpa erro de senha
     setDataNascimentoErro(""); // Limpa erro de data de nascimento
 
-    const usuarios = JSON.parse(localStorage.getItem("usuarios")) || [];
 
     const formData = {
       id: usuarios.length + 1,
@@ -311,7 +312,7 @@ function FormCadastro() {
             inputProps={{ maxLength: 14 }}
           />
           <TextField
-            sx={{ m: 1, width: '100%' }}
+            sx={{ m: 1, width: "100%" }}
             required
             label="Confirme o Telefone"
             value={telefoneConfirm}
@@ -320,13 +321,13 @@ function FormCadastro() {
               const formattedTelefoneConfirm = value
                 .replace(/\D/g, "")
                 .replace(/^(\d{2})(\d{5})(\d{4})$/, "($1) $2-$3");
-              if (formattedTelefoneConfirm.replace(/\D/g, "").length <= 11) {
-                setTelefoneConfirm(formattedTelefoneConfirm);
-                verificarTelefoneConfirmacao();
-              }
+              
+              setTelefoneConfirm(formattedTelefoneConfirm);
             }}
+            onBlur={verificarTelefoneConfirmacao} 
             inputProps={{ maxLength: 14 }}
           />
+
           {telefoneErro && (
             <Typography color="error" sx={{ mt: 1 }}>
               {telefoneErro}
