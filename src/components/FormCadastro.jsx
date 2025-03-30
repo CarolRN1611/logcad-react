@@ -20,6 +20,7 @@ function FormCadastro() {
   const [telefone, setTelefone] = useState('');
   const [telefoneConfirm, setTelefoneConfirm] = useState('');
 
+  //const [helperText, setHelperText] = useState("");  // Para usar com helperText
   // Estados para mensagens de erro
   const [emailErro, setEmailErro] = useState('');
   const [telefoneErro, setTelefoneErro] = useState('');
@@ -90,6 +91,15 @@ function FormCadastro() {
     if (password != passwordConfirm) {
       setSenhaErro('As senhas não coincidem. Por favor, verifique.');
       setIsFormValid(false);
+    }else if(password.length < 8) {
+      setSenhaErro('A senha deve ter pelo menos 8 caracteres, incluindo letras maiúsculas, números e caracteres especiais.');
+      setIsFormValid(false);
+
+    }
+    else if(strength < 75) {
+      setSenhaErro('A senha deve ter pelo menos 8 caracteres, incluindo letras maiúsculas, números e caracteres especiais.');
+      setIsFormValid(false);
+
     } else {
       setSenhaErro('');
       setIsFormValid(true);
