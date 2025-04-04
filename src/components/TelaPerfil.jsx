@@ -153,7 +153,7 @@ function TelaPerfil({ id }) {
             </Typography>
             <Typography variant="body1" sx={{ mb: 2, color: "#333", fontSize: "20px" }}>
             {user.nome.charAt(0).toUpperCase() + user.nome.slice(1)}{" "}
-            {user.sobrenome.charAt(0).toUpperCase() + user.sobrenome.slice(1)}
+            {user.sobrenome ? user.sobrenome.charAt(0).toUpperCase() + user.sobrenome.slice(1) : ""}
             </Typography>
 
             <Typography

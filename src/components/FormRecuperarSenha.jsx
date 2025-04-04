@@ -10,19 +10,31 @@ import Swal from "sweetalert2";
 function RecuperarSenha() {
   const [email, setEmail] = useState("");
   const [emailError, setEmailError] = useState(false);
+  const [helperText, setHelperText] = useState("");
   const navigate = useNavigate();
+  const usuarios = JSON.parse(localStorage.getItem("usuarios"));
 
   const handleSubmit = (event) => {
     event.preventDefault();
-
-    // Verificar se o e-mail contém o "@" e o "."
-    if (!email.includes("@") || !email.includes(".") || email.includes("@.")) {
+  
+    // Verificar se o e-mail contém "@" e "."
+    if (!email.includes("@")) {
       setEmailError(true);
+      setHelperText("Por favor, insira um e-mail válido.");
       return;
     }
-
+  
+    const usuarioExistente = usuarios.find((usuario) => usuario.email === email);
+  
+    // Se o usuário não for encontrado
+    if (!usuarioExistente) {
+      setEmailError(true);
+      setHelperText("E-mail não encontrado.");
+      return;
+    }
+  
     // Se o e-mail for válido, navegue para a página de validação
-    navigate("/validar-codigo");
+    navigate(`/validar-codigo/`);
     Swal.fire({
       title: "Sucesso!",
       text: "O código foi enviado! Verifique seu e-mail.",
@@ -30,6 +42,7 @@ function RecuperarSenha() {
       confirmButtonText: "Ok",
     });
   };
+  
 
   return (
     <Box
@@ -77,7 +90,7 @@ function RecuperarSenha() {
           setEmailError(false); // Limpa o erro quando o usuário digita
         }}
         error={emailError}
-        helperText={emailError ? "Por favor, insira um e-mail válido." : ""}
+        helperText={helperText}
         placeholder="Digite seu email"
       />
 

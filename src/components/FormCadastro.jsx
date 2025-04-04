@@ -5,6 +5,8 @@ import Swal from "sweetalert2";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import { LinearProgress } from "@mui/material";
+import { Stepper, Step, StepLabel } from '@mui/material';
+import { Padding } from '@mui/icons-material';
 
 function FormCadastro() {
   const [etapasDoCadastro, setEtapasDoCadastro] = useState(1);
@@ -19,14 +21,19 @@ function FormCadastro() {
   const [cpf, setCpf] = useState('');
   const [telefone, setTelefone] = useState('');
   const [telefoneConfirm, setTelefoneConfirm] = useState('');
+  const etapas = ['Nome', 'Email', 'Telefone', 'CPF','Senha'];
 
-  //const [helperText, setHelperText] = useState("");  // Para usar com helperText
+  const [helperText, setHelperText] = useState("");  // Para usar com helperText
+  const [helperTextConfirm, setHelperTextConfirm] = useState("");  // Para usar com helperText
   // Estados para mensagens de erro
-  const [emailErro, setEmailErro] = useState('');
-  const [telefoneErro, setTelefoneErro] = useState('');
-  const [cpfErro, setCpfErro] = useState('');
-  const [senhaErro, setSenhaErro] = useState('');
-  const [dataNascimentoErro, setDataNascimentoErro] = useState('');
+  const [emailErro, setEmailErro] = useState(false);
+  const [emailConfirmErro, setEmailConfirmErro] = useState(false);
+  const [telefoneErro, setTelefoneErro] = useState(false);
+  const [telefoneConfirmErro, setTelefoneConfirmErro] = useState(false);
+  const [cpfErro, setCpfErro] = useState(false);
+  const [senhaErro, setSenhaErro] = useState(false);
+  const [senhaConfirmErro, setSenhaConfirmErro] = useState(false);
+  const [dataNascimentoErro, setDataNascimentoErro] = useState(false);
   const [isFormValid, setIsFormValid] = useState(false);  // Estado para controlar se o formulário é válido ou não
 
   const [showPassword, setShowPassword] = useState(false); // Controle de visibilidade da senha
@@ -38,13 +45,19 @@ function FormCadastro() {
 
   // Função para validar o telefone em tempo real (11 dígitos no formato (11) 11111-1111)
   const validarTelefone = (value) => {
-    const telefoneRegex = /^\(\d{2}\) \d{5}-\d{4}$/;  // Expressão regular para o formato (XX) XXXXX-XXXX
+    const telefoneRegex = /^\(\d{2}\) \d{5}-\d{4}$/;  
     if (!telefoneRegex.test(value)) {
-      setTelefoneErro("O telefone deve ter o formato (XX) XXXXX-XXXX");
+      setTelefoneErro(true);
+      setHelperText("O telefone deve ter o formato (XX) XXXXX-XXXX");
       setIsFormValid(false);
+      return
     } else {
-      setTelefoneErro("");
+      setTelefoneErro(false);
+      setTelefoneConfirmErro(false);
+      setHelperText("");
+      setHelperTextConfirm("");
       setIsFormValid(true);
+      return
     }
   };
 
@@ -66,6 +79,7 @@ function FormCadastro() {
     setPassword(password);
     const strength = calculateStrength(password);
     setStrength(strength);
+    console.log("Força da senha:", strength);
   };
 
   
@@ -75,60 +89,66 @@ function FormCadastro() {
     return "success"; 
   };
 
-  // Função para verificar se o telefone e a confirmação de telefone são iguais
-  const verificarTelefoneConfirmacao = () => {
-    if (telefone !== telefoneConfirm) {
-      setTelefoneErro("Os telefones não coincidem. Por favor, verifique.");
-      setIsFormValid(false);
-    } else {
-      setTelefoneErro(" ");
-      setIsFormValid(true);
-    }
-  };
-
   // Função para validar a senha em tempo real
   const validarSenha = () => {
-    if (password != passwordConfirm) {
-      setSenhaErro('As senhas não coincidem. Por favor, verifique.');
+
+    if(!password) {
+      setSenhaErro(true);
+      setHelperText("A senha é obrigatória.");
       setIsFormValid(false);
-    }else if(password.length < 8) {
-      setSenhaErro('A senha deve ter pelo menos 8 caracteres, incluindo letras maiúsculas, números e caracteres especiais.');
+    }
+    if(password.length < 8) {
+      setSenhaErro(true);
+      setHelperText("A senha deve ter pelo menos 8 caracteres, incluindo letras maiúsculas, números e caracteres especiais.");
       setIsFormValid(false);
 
     }
     else if(strength < 75) {
-      setSenhaErro('A senha deve ter pelo menos 8 caracteres, incluindo letras maiúsculas, números e caracteres especiais.');
+      setSenhaErro(true);
+      setHelperText("A senha deve ter pelo menos 8 caracteres, incluindo letras maiúsculas, números e caracteres especiais.");
       setIsFormValid(false);
 
-    } else {
+    }
+    else if (passwordConfirm !== "" && password !== passwordConfirm){ 
+      setSenhaErro(true);
+      setSenhaConfirmErro(true);
+      setHelperText("As senhas não coincidem. Por favor, verifique.");
+      setHelperTextConfirm("As senhas não coincidem. Por favor, verifique.");
+      setIsFormValid(false);
+    }
+     else {
       setSenhaErro('');
+      setHelperText('');
+      setSenhaConfirmErro('');
+      setHelperTextConfirm('');
       setIsFormValid(true);
     }
   };
 
   // Função para formatar o CPF no formato XXX.XXX.XXX-XX
   const formatarCpf = (value) => {
-    // Remove qualquer caractere não numérico
     const cpfLimpo = value.replace(/\D/g, '');
+
     
-    // Aplica a formatação: XXX.XXX.XXX-XX
-    if (cpfLimpo.length < 12) {
+    if (cpfLimpo.length <= 11) {
       const formattedCpf = cpfLimpo
-        .replace(/^(\d{3})(\d{3})(\d{3})(\d{2})$/, '$1.$2.$3-$4');
-      setCpf(formattedCpf);
+        .replace(/^(\d{3})(\d{3})(\d{3})(\d{0,2})$/, "$1.$2.$3-$4");
+      return formattedCpf;
     }
+    return cpf; // fallback
+    
   };
 
   // Função para verificar se o CPF tem exatamente 11 dígitos
-  const validarCpf = (value) => {
-    const cpfLimpo = value.replace(/\D/g, '');
-    if (cpfLimpo.length !== 11) {
-      setCpfErro('O CPF deve ter 11 dígitos.');
+  const validarCpf = (cpf) => {
+    const cpfNumerico = cpf.replace(/\D/g, ""); // Remove não números
+    if (cpfNumerico.length !== 11) {
+      setCpfErro(true);
+      setHelperTextConfirm("O CPF deve ter 11 dígitos.");
       setIsFormValid(false);
-    }
-     else {
-      setCpfErro('');
-      setIsFormValid(true);
+    } else {
+      setCpfErro(false);
+      setHelperTextConfirm("");
     }
   };
 
@@ -136,22 +156,32 @@ function FormCadastro() {
   const validarDataNascimento = (value) => {
     const dataNascimentoFormatada = new Date(value);
     const hoje = new Date();
-    const idade = hoje.getFullYear() - dataNascimentoFormatada.getFullYear();
+  
+    const ano = hoje.getFullYear() - dataNascimentoFormatada.getFullYear();
     const mes = hoje.getMonth() - dataNascimentoFormatada.getMonth();
-
-    if (idade < 18 || (idade === 18 && mes < 0)) {
-      setDataNascimentoErro('Você precisa ter pelo menos 18 anos para se cadastrar.');
+    const dia = hoje.getDate() - dataNascimentoFormatada.getDate();
+  
+    let idade = ano;
+    if (mes < 0 || (mes === 0 && dia < 0)) {
+      idade--;
+    }
+  
+    if (idade < 18) {
+      setDataNascimentoErro(true);
+      setHelperText("Você deve ter pelo menos 18 anos.");
       setIsFormValid(false);
     } else {
-      setDataNascimentoErro('');
+      setDataNascimentoErro(false);
+      setHelperText('');
       setIsFormValid(true);
     }
   };
+  
 
   // Verificar se os campos obrigatórios da etapa estão preenchidos
   const verificarCamposPreenchidos = () => {
     if (etapasDoCadastro === 1) {
-      return nome && sobrenome;
+      return nome;
     }
     if (etapasDoCadastro === 2) {
       return email && emailConfirm;
@@ -169,20 +199,25 @@ function FormCadastro() {
   };
 
   const avancarEtapa = () => {
-    // Validação do e-mail
 
     const usuarioExistente = usuarios.find((usuario) => usuario.email === email);
     let hasError = false;
 
     if (etapasDoCadastro === 2) {
       if (email === "" || !email.includes("@")) {
-        setEmailErro("Email inválido! Por favor, verifique.");
+        setEmailConfirmErro(true);
+        setEmailErro(true);
+        setHelperText("O campo de email é obrigatório e deve conter um '@'.");
         hasError = true;
       } else if (email !== emailConfirm) {
-        setEmailErro("Os e-mails não coincidem. Por favor, verifique.");
+        setEmailErro(true);
+        setEmailConfirmErro(true);
+        setHelperText("Os e-mails não coincidem. Por favor, verifique.");
         hasError = true;
       } else if (usuarioExistente !== undefined) {
-        setEmailErro("Este e-mail já está cadastrado. Por favor, utilize outro.");
+        setEmailErro(true);
+        setEmailConfirmErro(true);
+        setHelperText("Esse e-mail já está cadastrado.");
         hasError = true;
       }
     }
@@ -190,39 +225,61 @@ function FormCadastro() {
 
     // Validação do telefone
     if (etapasDoCadastro === 3) {
+      let hasError = false;
+
       if (telefone === '' || !/^\(\d{2}\) \d{5}-\d{4}$/.test(telefone)) {
-        setTelefoneErro('O telefone deve ter o formato (XX) XXXXX-XXXX');
-        return;
+        setTelefoneErro(true);
+        setHelperText("O telefone deve ter o formato (XX) XXXXX-XXXX");
+        hasError = true;
       }
 
       if (telefoneConfirm === '' || !/^\(\d{2}\) \d{5}-\d{4}$/.test(telefoneConfirm)) {
-        setTelefoneErro('O telefone de confirmação deve ter o formato (XX) XXXXX-XXXX');
-        return;
+        setTelefoneConfirmErro(true);
+        setHelperTextConfirm("O telefone deve ter o formato (XX) XXXXX-XXXX");
+        hasError = true;
       }
 
       // Verificar se telefone e confirmar telefone são iguais
       if (telefone !== telefoneConfirm) {
-        setTelefoneErro('Os telefones não coincidem. Por favor, verifique.');
-        return;
+        setTelefoneErro(true);
+        setTelefoneConfirmErro(true);
+        setHelperText("Os telefones não coincidem. Por favor, verifique.");
+        setHelperTextConfirm("Os telefones não coincidem. Por favor, verifique.");
+        hasError = true;
       }
+      if (hasError) return;
     }
 
     // Validação de CPF
-    if (etapasDoCadastro === 4 && cpf.replace(/\D/g, '').length !== 11) {
-      setCpfErro('O CPF deve ter 11 dígitos.');
-      return;
+    if (etapasDoCadastro === 4) {
+
+      const cpfNumeros = cpf.replace(/\D/g, '');
+      
+      if (cpfNumeros.length !== 11) {
+        setCpfErro(true);
+        setHelperTextConfirm("O CPF deve conter exatamente 11 dígitos.");
+        setIsFormValid(false);
+        hasError = true;
+      }
     }
+    
 
     // Validação de data de nascimento (mínimo 18 anos)
     if (etapasDoCadastro === 4 && !dataNascimento) {
-      setDataNascimentoErro('A data de nascimento é obrigatória.');
-      return;
+      if (validarDataNascimento(dataNascimento)) {
+      setDataNascimentoErro(true);
+      setHelperText("A data de nascimento é obrigatória.");
+      hasError = true;
+      }
     }
 
     // Validação de senha
     if (etapasDoCadastro === 5 && password !== passwordConfirm) {
-      setSenhaErro('As senhas não coincidem. Por favor, verifique.');
-      return;
+      setSenhaErro(true);
+      setSenhaConfirmErro(true);
+      setHelperText("As senhas não coincidem. Por favor, verifique.1");
+      setHelperTextConfirm("As senhas não coincidem. Por favor, verifique.");
+      hasError = true;
     }
     
 
@@ -234,6 +291,7 @@ function FormCadastro() {
     setCpfErro(""); // Limpa erro de CPF
     setSenhaErro(""); // Limpa erro de senha
     setDataNascimentoErro(""); // Limpa erro de data de nascimento
+    setHelperText(""); // Limpa helperText de e-mail
 
 
     const formData = {
@@ -268,6 +326,8 @@ function FormCadastro() {
   const voltarEtapa = () => {
     if (etapasDoCadastro > 1) {
       setEtapasDoCadastro(etapasDoCadastro - 1);
+      setHelperText("");
+      setHelperTextConfirm("");
     } else {
       navigate("/"); // 🔹 Redireciona para a página inicial se estiver na primeira etapa
     }
@@ -287,18 +347,47 @@ function FormCadastro() {
     >
       <Typography variant="h4" sx={{ fontWeight: 'bold', mb: 2 }}>Cadastre-se</Typography>
 
+      <Stepper
+      sx={{
+        padding: 1,
+        "& .MuiStepLabel-label": {
+          fontSize: "0.8rem",
+          marginTop: "0.5rem",
+          marginBottom: "0.5rem",
+        },
+        "& .MuiStepIcon-root": {
+          fontSize: "1.2rem",
+        },
+      }} activeStep={etapasDoCadastro -1}>
+        {etapas.map((etapa, index) => (
+          <Step key={index}>
+            <StepLabel>{etapa}</StepLabel>
+          </Step>
+        ))}
+      </Stepper>
+
       {etapasDoCadastro === 1 && (
         <>
           <TextField sx={{ m: 1, width: '100%' }} required label="Nome" value={nome} onChange={(e) => setNome(e.target.value)} />
-          <TextField sx={{ m: 1, width: '100%' }} required label="Sobrenome" value={sobrenome} onChange={(e) => setSobrenome(e.target.value)} />
+          <TextField sx={{ m: 1, width: '100%' }} label="Sobrenome" value={sobrenome} onChange={(e) => setSobrenome(e.target.value)} />
         </>
       )}
 
       {etapasDoCadastro === 2 && (
         <>
-          <TextField sx={{ m: 1, width: '100%' }} required label="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
-          <TextField sx={{ m: 1, width: '100%' }} required label="Confirme o Email" value={emailConfirm} onChange={(e) => setEmailConfirm(e.target.value)} />
-          {emailErro && <Typography color="error" sx={{ mt: 1 }}>{emailErro}</Typography>}
+          <TextField sx={{ m: 1, width: '100%' }} required label="Email" value={email}  onChange={(e) => {setEmail(e.target.value);
+          setEmailErro(false);
+          setHelperText("");
+          }}
+          error={emailErro}
+          helperText={helperText}
+           />
+          <TextField sx={{ m: 1, width: '100%' }} required label="Confirme o Email" value={emailConfirm} onChange={(e) => {setEmailConfirm(e.target.value);
+          setEmailConfirmErro(false);
+          setHelperText("");
+          }}
+          error={emailConfirmErro}
+          helperText={helperText} />
         </>
       )}
 
@@ -316,9 +405,13 @@ function FormCadastro() {
                 .replace(/^(\d{2})(\d{5})(\d{4})$/, "($1) $2-$3");
               if (formattedTelefone.replace(/\D/g, "").length <= 11) {
                 setTelefone(formattedTelefone);
-                validarTelefone(formattedTelefone);
               }
-            }}
+              setTelefoneErro(false);
+              setHelperText("");
+              }}
+              onBlur={() => {validarTelefone(telefone)}}
+              error={telefoneErro}
+              helperText={helperText}
             inputProps={{ maxLength: 14 }}
           />
           <TextField
@@ -333,41 +426,37 @@ function FormCadastro() {
                 .replace(/^(\d{2})(\d{5})(\d{4})$/, "($1) $2-$3");
               
               setTelefoneConfirm(formattedTelefoneConfirm);
-            }}
-            onBlur={verificarTelefoneConfirmacao} 
+              setTelefoneConfirmErro(false);
+              setHelperTextConfirm("");
+              }}
+              error={telefoneConfirmErro}
+              helperText={helperTextConfirm}
             inputProps={{ maxLength: 14 }}
           />
-
-          {telefoneErro && (
-            <Typography color="error" sx={{ mt: 1 }}>
-              {telefoneErro}
-            </Typography>
-          )}
         </>
       )}
 
       {etapasDoCadastro === 4 && (
         <>
+          <>
           <TextField
             sx={{ m: 1, width: "100%" }}
             required
             label="Data de Nascimento"
             value={dataNascimento}
-            onChange={(e) => {
-              const value = e.target.value;
-              setDataNascimento(value);
-              validarDataNascimento(value);
-            }}
+            onChange={(e) => setDataNascimento(e.target.value)}
+            onBlur={() => validarDataNascimento(dataNascimento)}
+            error={dataNascimentoErro}
+            helperText={helperText}
             type="date"
             InputLabelProps={{ shrink: true }}
             InputProps={{
               inputProps: {
-                max: new Date().toISOString().split("T")[0],
+                max: new Date().toISOString().split("T")[0], // impede datas futuras
               },
             }}
           />
-          {dataNascimentoErro && <Typography color="error" sx={{ mt: 1 }}>{dataNascimentoErro}</Typography>}
-
+        </>
           <FormControl fullWidth sx={{ m: 1 }}>
             <InputLabel>Gênero</InputLabel>
             <Select
@@ -380,19 +469,23 @@ function FormCadastro() {
               <MenuItem value="outro">Outro</MenuItem>
             </Select>
           </FormControl>
+          
           <TextField
             sx={{ m: 1, width: '100%' }}
             required
             label="CPF"
             value={cpf}
             onChange={(e) => {
-              const value = e.target.value;
-              formatarCpf(value);
-              validarCpf
+            const formattedCpf = formatarCpf(e.target.value);
+            setCpf(formattedCpf);
+            setCpfErro(false);
+            setHelperTextConfirm("");
             }}
+            onBlur={() =>{ validarCpf(cpf)}}
+            error={cpfErro}
+            helperText={helperTextConfirm}
             inputProps={{ maxLength: 14 }}
           />
-          {cpfErro && <Typography color="error" sx={{ mt: 1 }}>{cpfErro}</Typography>}
         </>
       )}
 
@@ -407,8 +500,12 @@ function FormCadastro() {
             onChange={(e) => {
               setPassword(e.target.value);
               handlePasswordChange(e);
+              setSenhaErro(false);
+              setHelperText("");
             }}
             onBlur={validarSenha}
+            error={senhaErro}
+            helperText={helperText}
             InputProps={{
               endAdornment: (
                 <IconButton
@@ -456,8 +553,12 @@ function FormCadastro() {
             value={passwordConfirm}
             onChange={(e) => {
               setPasswordConfirm(e.target.value);
+              setSenhaConfirmErro(false);
+              setHelperTextConfirm("");
             }}
             onBlur={validarSenha}
+            error={senhaConfirmErro}
+            helperText={helperTextConfirm}
             InputProps={{
               endAdornment: (
                 <IconButton
@@ -469,8 +570,6 @@ function FormCadastro() {
               ),
             }}
           />
-
-          {senhaErro && <Typography color="error" sx={{ mt: 1 }}>{senhaErro}</Typography>}
         </>
       )}
 
