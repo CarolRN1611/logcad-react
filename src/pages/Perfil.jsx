@@ -1,5 +1,4 @@
 import { Box } from "@mui/material";
-import background from "../assets/wallpaper.jpg";
 import TelaPerfil from "../components/TelaPerfil";
 import { useParams } from "react-router-dom";
 
@@ -13,7 +12,7 @@ function Perfil() {
       sx={{
         textAlign: "center",
         p: 0,
-        backgroundImage: `url(${background})`,
+        backgroundImage: 'url("/wallpaper.jpg")',
         backgroundSize: "cover",
         backgroundPosition: "center",
         backgroundRepeat: "no-repeat",

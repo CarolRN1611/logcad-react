@@ -1,5 +1,4 @@
 import { Box } from "@mui/material";
-import background from '../assets/wallpaper.jpg';
 import FormRecuperarSenha from "../components/FormRecuperarSenha";
 
 function RecuperarSenha() {
@@ -8,7 +7,7 @@ function RecuperarSenha() {
       sx={{
         textAlign: "center",
         p: 0,
-        backgroundImage: `url(${background})`,
+        backgroundImage: 'url("/wallpaper.jpg")',
         backgroundSize: "cover",
         backgroundPosition: "center",
         backgroundColor: "#f0f0f0",
