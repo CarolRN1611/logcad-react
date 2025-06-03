@@ -1,6 +1,6 @@
 import { Button, Box, Typography } from "@mui/material";
 import FormLogin from "./components/FormLogin";
-import "./styles/app.css"; // Importando o CSS
+import "./styles/App.css"; 
 
 function App() {
   return (
