@@ -368,21 +368,21 @@ function FormCadastro() {
 
       {etapasDoCadastro === 1 && (
         <>
-          <TextField sx={{ m: 1, width: '100%' }} required label="Nome" value={nome} onChange={(e) => setNome(e.target.value)} />
-          <TextField sx={{ m: 1, width: '100%' }} label="Sobrenome" value={sobrenome} onChange={(e) => setSobrenome(e.target.value)} />
+          <TextField id='campo_nome' sx={{ m: 1, width: '100%' }} required label="Nome" value={nome} onChange={(e) => setNome(e.target.value)} />
+          <TextField id='campo_sobrenome' sx={{ m: 1, width: '100%' }} label="Sobrenome" value={sobrenome} onChange={(e) => setSobrenome(e.target.value)} />
         </>
       )}
 
       {etapasDoCadastro === 2 && (
         <>
-          <TextField sx={{ m: 1, width: '100%' }} required label="Email" value={email}  onChange={(e) => {setEmail(e.target.value);
+          <TextField id='campo_email' sx={{ m: 1, width: '100%' }} required label="Email" value={email}  onChange={(e) => {setEmail(e.target.value);
           setEmailErro(false);
           setHelperText("");
           }}
           error={emailErro}
           helperText={helperText}
            />
-          <TextField sx={{ m: 1, width: '100%' }} required label="Confirme o Email" value={emailConfirm} onChange={(e) => {setEmailConfirm(e.target.value);
+          <TextField id='campo_email_confirm' sx={{ m: 1, width: '100%' }} required label="Confirme o Email" value={emailConfirm} onChange={(e) => {setEmailConfirm(e.target.value);
           setEmailConfirmErro(false);
           setHelperText("");
           }}
@@ -394,6 +394,7 @@ function FormCadastro() {
       {etapasDoCadastro === 3 && (
         <>
           <TextField
+            id='campo_telefone'
             sx={{ m: 1, width: '100%' }}
             required
             label="Telefone"
@@ -415,6 +416,7 @@ function FormCadastro() {
             inputProps={{ maxLength: 14 }}
           />
           <TextField
+            id='campo_telefone_confirm'
             sx={{ m: 1, width: "100%" }}
             required
             label="Confirme o Telefone"
@@ -440,6 +442,7 @@ function FormCadastro() {
         <>
           <>
           <TextField
+            id='campo_data_nascimento'
             sx={{ m: 1, width: "100%" }}
             required
             label="Data de Nascimento"
@@ -458,8 +461,9 @@ function FormCadastro() {
           />
         </>
           <FormControl fullWidth sx={{ m: 1 }}>
-            <InputLabel>Gênero</InputLabel>
+            <InputLabel id="select-genero-label">Gênero</InputLabel>
             <Select
+              id='campo_genero'
               value={genero}
               onChange={(e) => setGenero(e.target.value)}
               label="Gênero"
@@ -471,6 +475,7 @@ function FormCadastro() {
           </FormControl>
           
           <TextField
+            id='campo_cpf'
             sx={{ m: 1, width: '100%' }}
             required
             label="CPF"
@@ -492,6 +497,7 @@ function FormCadastro() {
       {etapasDoCadastro === 5 && (
         <>
           <TextField
+            id='campo_senha'
             sx={{ m: 1, width: '100%' }}
             required
             label="Senha"
@@ -546,6 +552,7 @@ function FormCadastro() {
             </Typography>
           </Box>
           <TextField
+            id='campo_senha_confirm'
             sx={{ m: 1, width: '100%' }}
             required
             label="Confirme a Senha"
@@ -575,6 +582,7 @@ function FormCadastro() {
 
       <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%', mt: 2 }}>
         <Button
+          id='botao_voltar'
           variant="contained"
           onClick={voltarEtapa}
           sx={{ backgroundColor: 'white', color: 'blue', '&:hover': { backgroundColor: '#f5f5f5' } }}  // Cor branca para o botão
@@ -582,6 +590,7 @@ function FormCadastro() {
           Voltar
         </Button>
         <Button
+          id='botao_avancar'
           variant="contained"
           color="primary"
           onClick={avancarEtapa}

@@ -1,56 +1,53 @@
-import os
-import time
-
+import pytest
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from webdriver_manager.chrome import ChromeDriverManager
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
+URL = "http://localhost:5173/cadastro" 
 
-def get_path_with_file_name(filename: str) -> str:
-    return os.getcwd() + filename
-
-
-def configure_selenium() -> webdriver:
+@pytest.fixture
+def driver():
     service = Service(ChromeDriverManager().install())
     options = webdriver.ChromeOptions()
     options.add_experimental_option("detach", False)
     driver = webdriver.Chrome(service=service, options=options)
-    driver.get(get_path_with_file_name("/Login.html"))
-    return driver
+    driver.get(URL)
+    yield driver
+    driver.quit()
 
 
-def test_email_is_invalid():
-    # Assert
-    driver: webdriver = configure_selenium()
-    element_search_field = driver.find_element(By.ID, "email")
-    element_search_field.send_keys("dasdasdasdasddsddsd")
-    element_password_field = driver.find_element(By.ID, "password")
-    element_password_field.send_keys("123456789")
-    element_button_submit_search = driver.find_element(By.ID, "signin")
+#3. Validação do Email
+# Testes para o campo de email valido
+def test_email_is_valid(driver):
+    driver.find_element(By.ID, "campo_nome").send_keys("nomeTeste")
+    driver.find_element(By.ID, "campo_sobrenome").send_keys("sobrenomeTeste")
+    driver.find_element(By.ID, "botao_avancar").click()
 
-    # Act
-    element_button_submit_search.click()
+    driver.find_element(By.ID, "campo_email").send_keys("teste@exemplo.com")
+    driver.find_element(By.ID, "campo_email_confirm").send_keys("teste@exemplo.com")
+    driver.find_element(By.ID, "botao_avancar").click()
 
-    # Assert
-    element_message_feedback = driver.find_element(
-        By.ID, "messageFeedback").text
-    assert element_message_feedback == "Invalid format email!"
-    time.sleep(5)
+    # Aguarda até o campo da etapa três aparecer (exemplo: campo_senha)
+    campo_etapa_tres = WebDriverWait(driver, 5).until(
+        EC.presence_of_element_located((By.ID, "campo_telefone"))
+    )
+    assert campo_etapa_tres.is_displayed()
 
+# Testes para o campo de email invalido
+def test_email_is_invalid(driver):
+    driver.find_element(By.ID, "campo_nome").send_keys("nomeTeste")
+    driver.find_element(By.ID, "campo_sobrenome").send_keys("sobrenomeTeste")
+    driver.find_element(By.ID, "botao_avancar").click()
 
-def test_login_must_save_suscessfuly():
-    # Assert
-    driver: webdriver = configure_selenium()
-    element_search_field = driver.find_element(By.ID, "email")
-    element_search_field.send_keys("test@example.com")
-    element_password_field = driver.find_element(By.ID, "password")
-    element_password_field.send_keys("123456789")
-    element_button_submit_search = driver.find_element(By.ID, "signin")
-    # Act
-    element_button_submit_search.click()
-    # Assert
-    element_message_feedback = driver.find_element(
-        By.ID, "messageFeedback").text
-    assert element_message_feedback == "Username and password correct, you will be redirect to adminsitrador page wait..."
-    time.sleep(5)
+    driver.find_element(By.ID, "campo_email").send_keys("testeinvalido")
+    driver.find_element(By.ID, "campo_email_confirm").send_keys("testeinvalido")
+    driver.find_element(By.ID, "botao_avancar").click()
+
+    WebDriverWait(driver, 5).until(
+    EC.presence_of_element_located((By.XPATH, "//p[contains(text(), \"O campo de email é obrigatório e deve conter um '@'.\")]"))
+)
+    helper_text = driver.find_element(By.XPATH, "//p[contains(text(), \"O campo de email é obrigatório e deve conter um '@'.\")]").text
+    assert helper_text == "O campo de email é obrigatório e deve conter um '@'."
