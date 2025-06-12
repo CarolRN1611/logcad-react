@@ -8,6 +8,30 @@ import { LinearProgress } from "@mui/material";
 import { Stepper, Step, StepLabel } from '@mui/material';
 import { Padding } from '@mui/icons-material';
 
+function isCpfValid(cpf) {
+  cpf = cpf.replace(/[^\d]+/g, '');
+  if (cpf.length !== 11) return false;
+  if (/^(\d)\1+$/.test(cpf)) return false;
+
+  let soma = 0;
+  for (let i = 0; i < 9; i++) {
+    soma += parseInt(cpf.charAt(i)) * (10 - i);
+  }
+  let resto = (soma * 10) % 11;
+  if (resto === 10 || resto === 11) resto = 0;
+  if (resto !== parseInt(cpf.charAt(9))) return false;
+
+  soma = 0;
+  for (let i = 0; i < 10; i++) {
+    soma += parseInt(cpf.charAt(i)) * (11 - i);
+  }
+  resto = (soma * 10) % 11;
+  if (resto === 10 || resto === 11) resto = 0;
+  if (resto !== parseInt(cpf.charAt(10))) return false;
+
+  return true;
+}
+
 function FormCadastro() {
   const [etapasDoCadastro, setEtapasDoCadastro] = useState(1);
   const [nome, setNome] = useState('');
@@ -141,14 +165,19 @@ function FormCadastro() {
 
   // Função para verificar se o CPF tem exatamente 11 dígitos
   const validarCpf = (cpf) => {
-    const cpfNumerico = cpf.replace(/\D/g, ""); // Remove não números
+    const cpfNumerico = cpf.replace(/\D/g, "");
     if (cpfNumerico.length !== 11) {
       setCpfErro(true);
       setHelperTextConfirm("O CPF deve ter 11 dígitos.");
       setIsFormValid(false);
+    } else if (!isCpfValid(cpfNumerico)) {
+      setCpfErro(true);
+      setHelperTextConfirm("CPF inválido.");
+      setIsFormValid(false);
     } else {
       setCpfErro(false);
       setHelperTextConfirm("");
+      setIsFormValid(true);
     }
   };
 
@@ -277,7 +306,7 @@ function FormCadastro() {
     if (etapasDoCadastro === 5 && password !== passwordConfirm) {
       setSenhaErro(true);
       setSenhaConfirmErro(true);
-      setHelperText("As senhas não coincidem. Por favor, verifique.1");
+      setHelperText("As senhas não coincidem. Por favor, verifique.");
       setHelperTextConfirm("As senhas não coincidem. Por favor, verifique.");
       hasError = true;
     }
